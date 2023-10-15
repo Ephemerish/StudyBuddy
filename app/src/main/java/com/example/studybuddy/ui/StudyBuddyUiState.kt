@@ -15,7 +15,7 @@
  */
 package com.example.studybuddy.ui
 
-import com.example.studybuddy.NavDrawerType
+import com.example.studybuddy.data.NavDrawerType
 
 data class StudyBuddyUiState(
    // val mailboxes: Map<NavDrawerType, List<Email>> = emptyMap(),

@@ -20,7 +20,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.example.studybuddy.NavDrawerType
+import com.example.studybuddy.data.NavDrawerType
 import com.example.studybuddy.ui.StudyBuddyUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -39,7 +39,9 @@ class StudyBuddyViewModel : ViewModel() {
 
     }
 
-    fun updateCurrentMailbox(navDrawerType: NavDrawerType) {
+    fun updateCurrentNavDrawer(
+        navDrawerType: NavDrawerType,
+    ) {
         _uiState.update {
             it.copy(
                 currentNavDrawer = navDrawerType

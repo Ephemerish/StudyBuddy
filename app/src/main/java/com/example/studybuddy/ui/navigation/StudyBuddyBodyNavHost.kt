@@ -16,14 +16,67 @@
 
 package com.example.studybuddy.ui.navigation
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import com.example.studybuddy.data.NavDrawerType
+import com.example.studybuddy.ui.StudyBuddyUiState
+import com.example.studybuddy.ui.screen.ContactUsDestination
+import com.example.studybuddy.ui.screen.ContactUsScreen
+import com.example.studybuddy.ui.screen.HomeDestination
+import com.example.studybuddy.ui.screen.HomeScreen
+import com.example.studybuddy.ui.screen.MessageDestination
+import com.example.studybuddy.ui.screen.MessageScreen
+import com.example.studybuddy.ui.screen.MyClassDestination
+import com.example.studybuddy.ui.screen.MyClassScreen
+import com.example.studybuddy.ui.theme.StudyBuddyViewModel
+import kotlinx.coroutines.CoroutineScope
+
 
 /**
  * Provides Navigation graph for the application.
  */
 @Composable
 fun StudyBuddyBodyNavHost(
+    navController: NavHostController,
+    modifier: Modifier = Modifier,
 
+    viewModel: StudyBuddyViewModel,
+    navDrawerUiState: StudyBuddyUiState,
+    scope: CoroutineScope,
+    innerPaddingValues: PaddingValues
 ) {
-
+    NavHost(
+        navController = navController,
+        startDestination = HomeDestination.route,
+        modifier = modifier
+    ) {
+        composable(route = HomeDestination.route) {
+            HomeScreen(innerPaddingValues = innerPaddingValues)
+            viewModel.updateCurrentNavDrawer(
+                navDrawerType = NavDrawerType.Home,
+            )
+        }
+        composable(route = MessageDestination.route) {
+            MessageScreen()
+            viewModel.updateCurrentNavDrawer(
+                navDrawerType = NavDrawerType.Message,
+            )
+        }
+        composable(route = MyClassDestination.route) {
+            MyClassScreen()
+            viewModel.updateCurrentNavDrawer(
+                navDrawerType = NavDrawerType.MyClass,
+            )
+        }
+        composable(route = ContactUsDestination.route) {
+            ContactUsScreen()
+            viewModel.updateCurrentNavDrawer(
+                navDrawerType = NavDrawerType.ContactUs,
+            )
+        }
+    }
 }
