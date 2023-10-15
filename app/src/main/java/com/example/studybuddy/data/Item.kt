@@ -13,16 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.studybuddy.ui
 
-import com.example.studybuddy.NavDrawerType
+package com.example.studybuddy.data
 
-data class StudyBuddyUiState(
-   // val mailboxes: Map<NavDrawerType, List<Email>> = emptyMap(),
-    val currentNavDrawer: NavDrawerType = NavDrawerType.Home,
-   // val currentSelectedEmail: Email = LocalEmailsDataProvider.defaultEmail,
-    val isShowingHomepage: Boolean = true,
-    var selectItemIndex: Int = 0
-) {
-    // val currentMailboxEmails: List<Email> by lazy { mailboxes[currentMailbox]!! }
-}
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+
+/**
+ * Entity data class represents a single row in the database.
+ */
+@Entity(tableName = "items")
+data class Item(
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
+    val name: String,
+    val price: Double,
+    val quantity: Int
+)

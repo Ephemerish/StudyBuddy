@@ -13,16 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.studybuddy.ui
 
-import com.example.studybuddy.NavDrawerType
+package com.example.studybuddy.ui.navigation
 
-data class StudyBuddyUiState(
-   // val mailboxes: Map<NavDrawerType, List<Email>> = emptyMap(),
-    val currentNavDrawer: NavDrawerType = NavDrawerType.Home,
-   // val currentSelectedEmail: Email = LocalEmailsDataProvider.defaultEmail,
-    val isShowingHomepage: Boolean = true,
-    var selectItemIndex: Int = 0
-) {
-    // val currentMailboxEmails: List<Email> by lazy { mailboxes[currentMailbox]!! }
+/**
+ * Interface to describe the navigation destinations for the app
+ */
+interface NavigationDestination {
+    /**
+     * Unique name to define the path for a composable
+     */
+    val route: String
+
+    /**
+     * String resource id to that contains title to be displayed for the screen.
+     */
+    val titleRes: Int
 }

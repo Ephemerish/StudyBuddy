@@ -15,6 +15,10 @@
  */
 package com.example.studybuddy.ui.theme
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.example.studybuddy.NavDrawerType
 import com.example.studybuddy.ui.StudyBuddyUiState
@@ -39,6 +43,14 @@ class StudyBuddyViewModel : ViewModel() {
         _uiState.update {
             it.copy(
                 currentNavDrawer = navDrawerType
+            )
+        }
+    }
+
+    fun updateSelectItemIndex(index: Int) {
+        _uiState.update {
+            it.copy(
+                selectItemIndex = index
             )
         }
     }

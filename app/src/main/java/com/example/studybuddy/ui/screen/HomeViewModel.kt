@@ -13,16 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.studybuddy.ui
 
-import com.example.studybuddy.NavDrawerType
+package com.example.studybuddy.ui.screen
 
-data class StudyBuddyUiState(
-   // val mailboxes: Map<NavDrawerType, List<Email>> = emptyMap(),
-    val currentNavDrawer: NavDrawerType = NavDrawerType.Home,
-   // val currentSelectedEmail: Email = LocalEmailsDataProvider.defaultEmail,
-    val isShowingHomepage: Boolean = true,
-    var selectItemIndex: Int = 0
-) {
-    // val currentMailboxEmails: List<Email> by lazy { mailboxes[currentMailbox]!! }
+import androidx.lifecycle.ViewModel
+
+/**
+ * ViewModel to retrieve all items in the Room database.
+ */
+class HomeViewModel(): ViewModel() {
+
 }
+
+/**
+ * Ui State for HomeScreen
+ */
+// data class HomeUiState(val itemList: List<Item> = listOf())

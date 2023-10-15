@@ -13,16 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.example.studybuddy.ui
 
-import com.example.studybuddy.NavDrawerType
+import android.app.Application
 
-data class StudyBuddyUiState(
-   // val mailboxes: Map<NavDrawerType, List<Email>> = emptyMap(),
-    val currentNavDrawer: NavDrawerType = NavDrawerType.Home,
-   // val currentSelectedEmail: Email = LocalEmailsDataProvider.defaultEmail,
-    val isShowingHomepage: Boolean = true,
-    var selectItemIndex: Int = 0
-) {
-    // val currentMailboxEmails: List<Email> by lazy { mailboxes[currentMailbox]!! }
+
+/**
+ * Provides Factory to create instance of ViewModel for the entire Inventory app
+ */
+object AppViewModelProvider {
+
 }
+
+/**
+ * Extension function to queries for [Application] object and returns an instance of
+ * [InventoryApplication].
+ */
+

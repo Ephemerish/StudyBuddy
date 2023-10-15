@@ -13,16 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.studybuddy.ui
 
-import com.example.studybuddy.NavDrawerType
+package com.example.studybuddy.ui.screen
 
-data class StudyBuddyUiState(
-   // val mailboxes: Map<NavDrawerType, List<Email>> = emptyMap(),
-    val currentNavDrawer: NavDrawerType = NavDrawerType.Home,
-   // val currentSelectedEmail: Email = LocalEmailsDataProvider.defaultEmail,
-    val isShowingHomepage: Boolean = true,
-    var selectItemIndex: Int = 0
+import android.annotation.SuppressLint
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.runtime.Composable
+import com.example.studybuddy.R
+import com.example.studybuddy.ui.navigation.NavigationDestination
+
+
+object HomeDestination : NavigationDestination {
+    override val route = "home"
+    override val titleRes = R.string.app_name
+}
+
+/**
+ * Entry route for Home screen
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@Composable
+fun HomeScreen(
+
 ) {
-    // val currentMailboxEmails: List<Email> by lazy { mailboxes[currentMailbox]!! }
+
 }

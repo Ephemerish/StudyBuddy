@@ -13,16 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.studybuddy.ui
 
-import com.example.studybuddy.NavDrawerType
+package com.example.studybuddy
 
-data class StudyBuddyUiState(
-   // val mailboxes: Map<NavDrawerType, List<Email>> = emptyMap(),
-    val currentNavDrawer: NavDrawerType = NavDrawerType.Home,
-   // val currentSelectedEmail: Email = LocalEmailsDataProvider.defaultEmail,
-    val isShowingHomepage: Boolean = true,
-    var selectItemIndex: Int = 0
-) {
-    // val currentMailboxEmails: List<Email> by lazy { mailboxes[currentMailbox]!! }
+import android.app.Application
+import com.example.studybuddy.data.AppContainer
+import com.example.studybuddy.data.AppDataContainer
+
+class StudyBuddyApplication : Application() {
+
+    /**
+     * AppContainer instance used by the rest of classes to obtain dependencies
+     */
+    lateinit var container: AppContainer
+
+    override fun onCreate() {
+        super.onCreate()
+        container = AppDataContainer(this)
+    }
 }
