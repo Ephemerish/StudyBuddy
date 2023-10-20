@@ -17,6 +17,7 @@
 package com.example.studybuddy.ui.screen
 
 import android.annotation.SuppressLint
+import android.service.autofill.OnClickAction
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -30,6 +31,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -53,6 +55,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.studybuddy.R
 import com.example.studybuddy.data.FeatureCourseContent
 import com.example.studybuddy.data.FeatureCourseContentList
@@ -69,7 +73,8 @@ object HomeDestination : NavigationDestination {
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun HomeScreen(
-    innerPaddingValues: PaddingValues
+    innerPaddingValues: PaddingValues,
+    navController: NavHostController
 ) {
     val viewModel: HomeViewModel = viewModel()
     Column(
@@ -89,7 +94,7 @@ fun HomeScreen(
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = stringResource(R.string.app_name),
+                    text = "(StudyBuddy LOGO)",
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center
                 )
@@ -119,7 +124,23 @@ fun HomeScreen(
                     modifier = Modifier.padding(5 .dp)
                 ) {
                     items(FeatureCourseContentList) {
-                        CourseCard(it)
+                        CourseCard(
+                            featureCourse = it,
+                            onClickAction = {
+                                navController.navigate(TutorListDestination.route){
+                                    navController.graph.startDestinationRoute?.let { route ->
+                                        popUpTo(route) {
+                                            saveState = true
+                                        }
+                                    }
+                                    // Avoid multiple copies of the same destination when
+                                    // reselecting the same item
+                                    launchSingleTop = true
+                                    // Restore state when reselecting a previously selected item
+                                    restoreState = true
+                                }
+                            }
+                        )
                     }
                 }
             }
@@ -130,17 +151,38 @@ fun HomeScreen(
                 .weight(2f)
                 .fillMaxWidth()
         ) {
-            Text(
-                text = "Become A Tutor",
-                modifier = Modifier
-                    .padding(0.dp)
-                    .fillMaxSize()
-                    .wrapContentSize(Alignment.Center),
-                textAlign = TextAlign.Center,
-                style = TextStyle(
-                    fontWeight = FontWeight.Bold
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "Become A Tutor",
+                    modifier = Modifier
+                        .padding(10.dp)
+                        .wrapContentSize(Alignment.Center),
+                    textAlign = TextAlign.Center,
+                    style = TextStyle(
+                        fontWeight = FontWeight.Bold
+                    )
                 )
-            )
+                Button(onClick = {
+                    navController.navigate(RegistrationDestination.route) {
+                        navController.graph.startDestinationRoute?.let { route ->
+                            popUpTo(route) {
+                                saveState = true
+                            }
+                        }
+                        // Avoid multiple copies of the same destination when
+                        // reselecting the same item
+                        launchSingleTop = true
+                        // Restore state when reselecting a previously selected item
+                        restoreState = true
+                    }
+                }) {
+                    Text(text = "Apply Now")
+                }
+            }
         }
     }
 }
@@ -148,16 +190,14 @@ fun HomeScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CourseCard(
-    featureCourse: FeatureCourseContent
+    featureCourse: FeatureCourseContent,
+    onClickAction: ()->Unit
 ) {
-    var enable by remember { mutableStateOf(true) }
     Card(
-        onClick = {
-            run { enable = !enable }
-        },
+        onClick = onClickAction,
         modifier = Modifier
             .size(width = 105.dp, height = 85.dp),
-        enabled = enable
+        enabled = true
     ) {
         Column(
             modifier = Modifier
@@ -189,11 +229,11 @@ fun CourseCard(
 @Preview
 @Composable
 fun CourseCardPrev() {
-    CourseCard(FeatureCourseContentList[0])
+    CourseCard(FeatureCourseContentList[0], {})
 }
 
 @Preview
 @Composable
 fun HomeScreenPrev() {
-    HomeScreen(innerPaddingValues = PaddingValues(vertical = 80.dp))
+    HomeScreen(innerPaddingValues = PaddingValues(vertical = 80.dp),  rememberNavController())
 }

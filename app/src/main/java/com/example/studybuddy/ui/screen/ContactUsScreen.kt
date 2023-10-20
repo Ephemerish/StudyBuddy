@@ -1,5 +1,8 @@
 package com.example.studybuddy.ui.screen
 
+import android.app.TimePickerDialog
+import android.widget.TimePicker
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -7,7 +10,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
@@ -47,9 +52,11 @@ fun ContactUsScreen(
                 .padding(10.dp)
                 .weight(1f),
         )
-        Button(onClick = {
+        Button(
+            onClick = {
 
-        }
+            },
+            colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary)
         ) {
             Text(text = "Submit")
         }

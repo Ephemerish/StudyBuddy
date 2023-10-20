@@ -32,6 +32,12 @@ import com.example.studybuddy.ui.screen.MessageDestination
 import com.example.studybuddy.ui.screen.MessageScreen
 import com.example.studybuddy.ui.screen.MyClassDestination
 import com.example.studybuddy.ui.screen.MyClassScreen
+import com.example.studybuddy.ui.screen.RegistrationDestination
+import com.example.studybuddy.ui.screen.RegistrationScreen
+import com.example.studybuddy.ui.screen.TutorDetailDestination
+import com.example.studybuddy.ui.screen.TutorDetailScreen
+import com.example.studybuddy.ui.screen.TutorListDestination
+import com.example.studybuddy.ui.screen.TutorListScreen
 import com.example.studybuddy.ui.theme.StudyBuddyViewModel
 import kotlinx.coroutines.CoroutineScope
 
@@ -55,7 +61,7 @@ fun StudyBuddyBodyNavHost(
         modifier = modifier
     ) {
         composable(route = HomeDestination.route) {
-            HomeScreen(innerPaddingValues = innerPaddingValues)
+            HomeScreen(innerPaddingValues = innerPaddingValues, navController = navController)
             viewModel.updateCurrentNavDrawer(
                 navDrawerType = NavDrawerType.Home,
             )
@@ -76,6 +82,24 @@ fun StudyBuddyBodyNavHost(
             ContactUsScreen()
             viewModel.updateCurrentNavDrawer(
                 navDrawerType = NavDrawerType.ContactUs,
+            )
+        }
+        composable(route = RegistrationDestination.route) {
+            RegistrationScreen(navController = navController)
+            viewModel.updateCurrentNavDrawer(
+                navDrawerType = NavDrawerType.Home,
+            )
+        }
+        composable(route = TutorListDestination.route) {
+           TutorListScreen(navController = navController)
+            viewModel.updateCurrentNavDrawer(
+                navDrawerType = NavDrawerType.Home,
+            )
+        }
+        composable(route = TutorDetailDestination.route) {
+           TutorDetailScreen(navController = navController)
+            viewModel.updateCurrentNavDrawer(
+                navDrawerType = NavDrawerType.Home,
             )
         }
     }
