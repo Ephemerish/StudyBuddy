@@ -1,4 +1,4 @@
-package com.example.studybuddy.data
+package com.example.studybuddy.data.database
 
 import androidx.room.Dao
 import androidx.room.Insert

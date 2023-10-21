@@ -1,8 +1,7 @@
-package com.example.studybuddy.data
+package com.example.studybuddy.data.database
 
 import androidx.room.Dao
 import androidx.room.Insert
-import com.example.studybuddy.data.SessionParticipants
 
 @Dao
 interface SessionParticipantsDao {

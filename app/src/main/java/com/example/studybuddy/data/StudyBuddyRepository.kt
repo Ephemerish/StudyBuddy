@@ -16,6 +16,9 @@
 
 package com.example.studybuddy.data
 
+import com.example.studybuddy.data.database.Subject
+import com.example.studybuddy.data.database.SubjectDao
+import com.example.studybuddy.data.database.User
 import kotlinx.coroutines.flow.Flow
 
 /**

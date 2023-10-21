@@ -19,7 +19,7 @@ package com.example.studybuddy.ui.screen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.studybuddy.data.StudyBuddyRepository
-import com.example.studybuddy.data.SubjectDao
+import com.example.studybuddy.data.database.SubjectDao
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
