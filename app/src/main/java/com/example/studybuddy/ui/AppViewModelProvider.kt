@@ -16,18 +16,29 @@
 
 package com.example.studybuddy.ui
 
+
 import android.app.Application
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory
+import androidx.lifecycle.createSavedStateHandle
+import androidx.lifecycle.viewmodel.CreationExtras
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import com.example.studybuddy.StudyBuddyApplication
+import com.example.studybuddy.ui.screen.HomeViewModel
+import com.example.studybuddy.ui.screen.RegistrationViewModel
 
-
-/**
- * Provides Factory to create instance of ViewModel for the entire Inventory app
- */
 object AppViewModelProvider {
-
+    val Factory = viewModelFactory {
+        // Initializer for HomeViewModel
+        initializer {
+            HomeViewModel(inventoryApplication().container.studyBuddyRepository)
+        }
+        // Initializer for RegistrationViewModel
+        initializer {
+            RegistrationViewModel(inventoryApplication().container.studyBuddyRepository)
+        }
+    }
 }
 
-/**
- * Extension function to queries for [Application] object and returns an instance of
- * [InventoryApplication].
- */
-
+fun CreationExtras.inventoryApplication(): StudyBuddyApplication =
+    (this[AndroidViewModelFactory.APPLICATION_KEY] as StudyBuddyApplication)

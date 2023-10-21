@@ -7,7 +7,7 @@ import com.example.studybuddy.ui.navigation.NavigationDestination
 
 data class FeatureCourseContent(
     val courseName: String,
-    @DrawableRes val image: Int,
+    @DrawableRes val image: Int = R.drawable.ic_launcher_background,
 )
 
 val FeatureCourseContentList = listOf(
