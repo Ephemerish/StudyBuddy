@@ -22,17 +22,26 @@ import android.content.Context
  * App container for Dependency injection.
  */
 interface AppContainer {
-    val itemsRepository: ItemsRepository
+    val studyBuddyRepository: StudyBuddyRepository
 }
 
 /**
- * [AppContainer] implementation that provides instance of [OfflineItemsRepository]
+ * [AppContainer] implementation that provides instance of [OfflineStudyBuddyRepository]
  */
 class AppDataContainer(private val context: Context) : AppContainer {
-    /**
-     * Implementation for [ItemsRepository]
-     */
-    override val itemsRepository: ItemsRepository by lazy {
-        OfflineItemsRepository(InventoryDatabase.getDatabase(context).itemDao())
+    private val studyBuddyDatabase: StudyBuddyDatabase by lazy {
+        StudyBuddyDatabase.getDatabase(context)
+    }
+
+//    override val itemsRepository: StudyBuddyRepository by lazy {
+//        OfflineStudyBuddyRepository(StudyBuddyDatabase.getDatabase(context).itemDao())
+//    }
+    override val studyBuddyRepository: StudyBuddyRepository by lazy {
+        OfflineStudyBuddyRepository(
+            StudyBuddyDatabase.getDatabase(context).userDao(),
+            StudyBuddyDatabase.getDatabase(context).subjectDao(),
+            StudyBuddyDatabase.getDatabase(context).reviewsDao()
+            // Add other DAOs as needed
+        )
     }
 }

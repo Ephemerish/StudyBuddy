@@ -16,35 +16,29 @@
 
 package com.example.studybuddy.data
 
-import com.example.studybuddy.data.Item
 import kotlinx.coroutines.flow.Flow
 
 /**
  * Repository that provides insert, update, delete, and retrieve of [Item] from a given data source.
  */
-interface ItemsRepository {
-    /**
-     * Retrieve all the items from the the given data source.
-     */
-    fun getAllItemsStream(): Flow<List<Item>>
+interface StudyBuddyRepository {
+    // User-related operations
 
-    /**
-     * Retrieve an item from the given data source that matches with the [id].
-     */
-    fun getItemStream(id: Int): Flow<Item?>
+    suspend fun insertUser(user: User)
 
-    /**
-     * Insert item in the data source
-     */
-    suspend fun insertItem(item: Item)
+    fun getUser(userId: Int): Flow<User?>
 
-    /**
-     * Delete item from the data source
-     */
-    suspend fun deleteItem(item: Item)
+    // Subject-related operations
 
-    /**
-     * Update item in the data source
-     */
-    suspend fun updateItem(item: Item)
+    suspend fun insertSubject(subject: Subject)
+
+    fun getSubject(subjectId: Int): Flow<Subject?>
+
+    // Top-rated subjects
+
+    fun getTopRatedSubjects(): Flow<List<SubjectDao.SubjectWithAverageRating>>
+
+    suspend fun insertSampleSubject()
+
+    suspend fun clearAllSubjects()
 }

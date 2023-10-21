@@ -21,16 +21,20 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.studybuddy.R
+import com.example.studybuddy.ui.AppViewModelProvider
 import com.example.studybuddy.ui.navigation.NavigationDestination
+import kotlinx.coroutines.launch
 
 object RegistrationDestination : NavigationDestination {
     override val route = "registration"
@@ -40,8 +44,10 @@ object RegistrationDestination : NavigationDestination {
 @Composable
 fun RegistrationScreen(
     paddingValues: PaddingValues = PaddingValues(),
-    navController: NavHostController
+    navController: NavHostController,
+    viewModel: RegistrationViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
+    val coroutineScope = rememberCoroutineScope()
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -92,8 +98,23 @@ fun RegistrationScreen(
             }
         }
         item {
-            Button(onClick = { navController.navigateUp() }) {
-                Text(text = "Submit")
+            Button(onClick = {
+                coroutineScope.launch {
+                    viewModel.clearSampleSubjects()
+                    navController.navigateUp()
+                }
+            }) {
+                Text(text = "clearSampleSubject")
+            }
+        }
+        item {
+            Button(onClick = {
+                coroutineScope.launch {
+                    viewModel.insertSampleSubjects()
+                    navController.navigateUp()
+                }
+            }) {
+                Text(text = "insertSampleData")
             }
         }
     }
