@@ -17,6 +17,9 @@
 package com.example.studybuddy.data
 
 import android.content.Context
+import com.example.studybuddy.data.database.OfflineStudyBuddyRepository
+import com.example.studybuddy.data.database.StudyBuddyDatabase
+import com.example.studybuddy.data.database.StudyBuddyRepository
 
 /**
  * App container for Dependency injection.

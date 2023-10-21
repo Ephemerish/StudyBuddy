@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.studybuddy.data
+package com.example.studybuddy.data.database
 
 import kotlinx.coroutines.flow.Flow
 

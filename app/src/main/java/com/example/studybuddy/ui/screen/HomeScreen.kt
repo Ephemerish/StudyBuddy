@@ -17,8 +17,6 @@
     package com.example.studybuddy.ui.screen
 
     import android.annotation.SuppressLint
-    import android.service.autofill.OnClickAction
-    import androidx.annotation.DrawableRes
     import androidx.compose.foundation.Image
     import androidx.compose.foundation.layout.Arrangement
     import androidx.compose.foundation.layout.Column
@@ -39,37 +37,27 @@
     import androidx.compose.material3.OutlinedTextField
     import androidx.compose.material3.Surface
     import androidx.compose.material3.Text
-    import androidx.compose.material3.TextFieldDefaults
     import androidx.compose.runtime.Composable
     import androidx.compose.runtime.collectAsState
     import androidx.compose.runtime.getValue
-    import androidx.compose.runtime.mutableStateOf
-    import androidx.compose.runtime.remember
     import androidx.compose.runtime.rememberCoroutineScope
-    import androidx.compose.runtime.setValue
     import androidx.compose.ui.Alignment
     import androidx.compose.ui.Modifier
     import androidx.compose.ui.layout.ContentScale
     import androidx.compose.ui.res.painterResource
-    import androidx.compose.ui.res.stringResource
     import androidx.compose.ui.text.TextStyle
     import androidx.compose.ui.text.font.FontWeight
     import androidx.compose.ui.text.style.TextAlign
     import androidx.compose.ui.text.style.TextOverflow
     import androidx.compose.ui.tooling.preview.Preview
     import androidx.compose.ui.unit.dp
-    import androidx.lifecycle.viewModelScope
     import androidx.lifecycle.viewmodel.compose.viewModel
     import androidx.navigation.NavHostController
     import androidx.navigation.compose.rememberNavController
     import com.example.studybuddy.R
-    import com.example.studybuddy.data.FeatureCourseContent
-    import com.example.studybuddy.data.FeatureCourseContentList
-    import com.example.studybuddy.data.Item
-    import com.example.studybuddy.data.SubjectDao
+    import com.example.studybuddy.data.database.SubjectDao
     import com.example.studybuddy.ui.AppViewModelProvider
     import com.example.studybuddy.ui.navigation.NavigationDestination
-    import com.example.studybuddy.ui.theme.StudyBuddyViewModel
 
 
     object HomeDestination : NavigationDestination {
