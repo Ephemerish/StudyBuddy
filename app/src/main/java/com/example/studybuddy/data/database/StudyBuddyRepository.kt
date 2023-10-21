@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.studybuddy.data
+package com.example.studybuddy.data.database
 
 import com.example.studybuddy.data.database.Subject
 import com.example.studybuddy.data.database.SubjectDao

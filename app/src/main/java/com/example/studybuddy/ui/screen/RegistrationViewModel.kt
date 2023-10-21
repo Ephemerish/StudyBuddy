@@ -1,7 +1,7 @@
 package com.example.studybuddy.ui.screen
 
 import androidx.lifecycle.ViewModel
-import com.example.studybuddy.data.StudyBuddyRepository
+import com.example.studybuddy.data.database.StudyBuddyRepository
 
 class RegistrationViewModel(
     private val studyBuddyRepository: StudyBuddyRepository
