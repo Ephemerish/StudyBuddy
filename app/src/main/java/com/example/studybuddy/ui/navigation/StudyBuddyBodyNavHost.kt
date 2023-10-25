@@ -91,13 +91,13 @@ fun StudyBuddyBodyNavHost(
             )
         }
         composable(route = TutorListDestination.route) {
-           TutorListScreen(navController = navController)
+            TutorListScreen(navController = navController)
             viewModel.updateCurrentNavDrawer(
                 navDrawerType = NavDrawerType.Home,
             )
         }
         composable(route = TutorDetailDestination.route) {
-           TutorDetailScreen(navController = navController)
+            TutorDetailScreen(navController = navController)
             viewModel.updateCurrentNavDrawer(
                 navDrawerType = NavDrawerType.Home,
             )
