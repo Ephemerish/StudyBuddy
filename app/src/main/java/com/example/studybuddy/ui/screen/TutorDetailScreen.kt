@@ -3,7 +3,6 @@ package com.example.studybuddy.ui.screen
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -28,9 +27,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -42,8 +42,7 @@ import com.example.studybuddy.ui.navigation.NavigationDestination
 object TutorDetailDestination : NavigationDestination {
     override val route = "tutorDetail"
     override val title = "TutorDetail"
-}
-@Composable
+}@Composable
 fun TutorDetailScreen(
     navController: NavHostController
 ) {
@@ -62,7 +61,7 @@ fun TutorDetailScreen(
                 modifier = Modifier.weight(1f)
             ) {
                 Image(
-                    painter = painterResource(R.drawable._83945387_1317182618979724_2368759731661496754_n_removebg_preview),
+                    painter = painterResource(R.drawable.harold),
                     contentDescription = "Tutor Pic",
                     contentScale = ContentScale.Fit,
                     modifier = Modifier.weight(1f)
@@ -79,7 +78,12 @@ fun TutorDetailScreen(
                     .fillMaxHeight()
             ) {
                 Text(
-                    text = "NAME",
+                    text = "Kenneth Harold Panis",
+                    style = TextStyle(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 25.sp
+                    ),
+                    textAlign = TextAlign.Center
                 )
                 Button(
                     onClick = { deleteConfirmationRequired = true },
@@ -100,10 +104,13 @@ fun TutorDetailScreen(
             Column(
                 verticalArrangement = Arrangement.SpaceEvenly
             ) {
-            Text(text = "Resume")
-            Text(text = "the resume")
-            Text(text = "Curriculum")
-            Text(text = "the Curriculum")
+                Text(text = "Profile")
+                Text(text = "   7 years experience in programing")
+                Text(text = "Curriculum")
+                Text(text = "   Programming")
+                Text(text = "   C++")
+                Text(text = "   Mobile")
+                Text(text = "   Quantum Computing")
             }
         }
         Surface(
@@ -120,7 +127,7 @@ fun TutorDetailScreen(
                         item {
                             Image(
                                 painter = painterResource(R.drawable._83945387_1317182618979724_2368759731661496754_n_removebg_preview),
-                                contentDescription = "Tutors Cource Pic",
+                                contentDescription = "Tutors Course Pic",
                                 Modifier.fillMaxHeight()
                             )
                         }
@@ -134,11 +141,24 @@ fun TutorDetailScreen(
         EnrollConfirmationDialog(
             onDeleteConfirm = {
                 deleteConfirmationRequired = false
+                navController.navigate(MessageDestination.route) {
+                    navController.graph.startDestinationRoute?.let { route ->
+                        popUpTo(route) {
+                            saveState = true
+                        }
+                    }
+                    // Avoid multiple copies of the same destination when
+                    // reselecting the same item
+                    launchSingleTop = true
+                    // Restore state when reselecting a previously selected item
+                    restoreState = true
+                }
             },
             onDeleteCancel = {
                 deleteConfirmationRequired = false
             },
-            modifier = Modifier.padding(10.dp)
+            modifier = Modifier.padding(10.dp),
+            tutorName = "Kenneth Harold Panis"
         )
     }
 }
@@ -147,11 +167,12 @@ fun TutorDetailScreen(
 fun EnrollConfirmationDialog(
     onDeleteConfirm: () -> Unit,
     onDeleteCancel: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    tutorName: String
 ) {
     AlertDialog(onDismissRequest = { /* Do nothing */ },
         title = { Text("Attention") },
-        text = { Text("Are You sure You want to Enroll to (NAME OF PERSON)") },
+        text = { Text("Are You sure You want to Enroll to $tutorName") },
         modifier = modifier,
         dismissButton = {
             TextButton(onClick = onDeleteCancel) {

@@ -27,13 +27,15 @@ import kotlinx.coroutines.flow.Flow
 interface StudyBuddyRepository {
     // User-related operations
 
-    suspend fun insertUser(user: User)
+    suspend fun upsertUser(user: User)
 
     fun getUser(userId: Int): Flow<User?>
 
+    suspend fun deleteUser()
+
     // Subject-related operations
 
-    suspend fun insertSubject(subject: Subject)
+    suspend fun upsertSubject(subject: Subject)
 
     fun getSubject(subjectId: Int): Flow<Subject?>
 
@@ -41,7 +43,7 @@ interface StudyBuddyRepository {
 
     fun getTopRatedSubjects(): Flow<List<SubjectDao.SubjectWithAverageRating>>
 
-    suspend fun insertSampleSubject()
+    suspend fun upsertSampleSubject()
 
     suspend fun clearAllSubjects()
 }

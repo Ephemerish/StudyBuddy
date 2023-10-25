@@ -22,10 +22,14 @@
     import androidx.compose.foundation.layout.Column
     import androidx.compose.foundation.layout.PaddingValues
     import androidx.compose.foundation.layout.Row
+    import androidx.compose.foundation.layout.Spacer
+    import androidx.compose.foundation.layout.fillMaxHeight
     import androidx.compose.foundation.layout.fillMaxSize
     import androidx.compose.foundation.layout.fillMaxWidth
     import androidx.compose.foundation.layout.padding
     import androidx.compose.foundation.layout.size
+    import androidx.compose.foundation.layout.sizeIn
+    import androidx.compose.foundation.layout.width
     import androidx.compose.foundation.layout.wrapContentSize
     import androidx.compose.foundation.lazy.grid.GridCells
     import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -51,6 +55,7 @@
     import androidx.compose.ui.text.style.TextOverflow
     import androidx.compose.ui.tooling.preview.Preview
     import androidx.compose.ui.unit.dp
+    import androidx.compose.ui.unit.sp
     import androidx.lifecycle.viewmodel.compose.viewModel
     import androidx.navigation.NavHostController
     import androidx.navigation.compose.rememberNavController
@@ -89,12 +94,14 @@
                     .padding(top = 5.dp)
             ) {
                 Column(
-                    verticalArrangement = Arrangement.Center
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(
-                        text = "(StudyBuddy LOGO)",
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center
+                    Image(painter = painterResource(R.drawable._83945387_1317182618979724_2368759731661496754_n_removebg_preview),
+                        contentDescription = "LOGO",
+                        contentScale = ContentScale.FillWidth,
+                        alignment = Alignment.Center,
+                        modifier = Modifier.sizeIn(maxWidth = 150.dp)
                     )
                     Text(
                         text = "I need the tutor for",
@@ -105,12 +112,12 @@
                         value = "",
                         onValueChange = {
     //                        viewModel.updateUiState(viewModel._homeUiState.copy(searchCourseText = it))
-                            },
+                        },
                         label = {
                             Text(
                                 text = "Search Course",
                             )
-                            },
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(10.dp),
@@ -149,14 +156,17 @@
                             horizontalAlignment = Alignment.CenterHorizontally,
                             modifier = Modifier
                                 .fillMaxWidth()
+                                .fillMaxHeight()
                         ) {
-                            Image(
-                                painter = painterResource(R.drawable._83945387_1317182618979724_2368759731661496754_n_removebg_preview),
-                                contentDescription = "No Subject LOGO",
-                                modifier = Modifier.fillMaxWidth(),
-                                contentScale = ContentScale.Crop
+                            Spacer(modifier = Modifier.padding(30.dp))
+                            Text(
+                                text = "NO SUBJECTS",
+                                modifier = Modifier.weight(1f),
+                                style = TextStyle(
+                                    fontSize = 50.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
                             )
-                            Text(text = "NO SUBJECTS")
                         }
                     }
                 }
@@ -164,7 +174,7 @@
             Surface(
                 color = MaterialTheme.colorScheme.tertiary,
                 modifier = Modifier
-                    .weight(2f)
+                    .weight(1.5f)
                     .fillMaxWidth()
             ) {
                 Column(

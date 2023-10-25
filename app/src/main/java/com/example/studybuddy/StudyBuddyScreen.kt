@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DrawerState
@@ -37,17 +38,28 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.studybuddy.data.navigationItemContentList
 import com.example.studybuddy.data.sideNavigationItemContentList
+import com.example.studybuddy.presentation.sign_in.GoogleAuthUiClient
+import com.example.studybuddy.presentation.sign_in.ProfileDestination
 import com.example.studybuddy.ui.StudyBuddyUiState
+import com.example.studybuddy.ui.navigation.NavigationDestination
 import com.example.studybuddy.ui.navigation.StudyBuddyBodyNavHost
 import com.example.studybuddy.ui.theme.StudyBuddyViewModel
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
+object StudyBuddyDestination : NavigationDestination {
+    override val route = "StudyBuddy"
+    override val title = "StudyBuddy"
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StudyBuddyScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    loginNavController: NavHostController,
+    googleAuthUiClient: GoogleAuthUiClient,
+    onSignOut: () -> Job
 ) {
     val viewModel: StudyBuddyViewModel = viewModel()
     val navDrawerUiState = viewModel.uiState.collectAsState().value
@@ -72,6 +84,7 @@ fun StudyBuddyScreen(
                 StudyBuddyTopBar(
                     viewModel = viewModel,
                     navDrawerUiState = navDrawerUiState,
+                    loginNavController = loginNavController,
                     drawerState = drawerState,
                     scope = scope
                 )
@@ -89,7 +102,8 @@ fun StudyBuddyScreen(
             ) {
                 Surface(
                     color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier
+                        .weight(1f)
                         .fillMaxSize()
                 ) {
                     Text(
@@ -99,7 +113,8 @@ fun StudyBuddyScreen(
                     )
                 }
                 Surface(
-                    modifier = Modifier.weight(15f)
+                    modifier = Modifier
+                        .weight(15f)
                         .fillMaxSize()
                 ) {
                     StudyBuddyBodyNavHost(
@@ -122,7 +137,8 @@ fun StudyBuddyTopBar(
     modifier: Modifier = Modifier,
     navDrawerUiState: StudyBuddyUiState,
     drawerState: DrawerState,
-    scope: CoroutineScope
+    scope: CoroutineScope,
+    loginNavController: NavHostController
 ) {
     CenterAlignedTopAppBar(
         title = {
@@ -144,6 +160,18 @@ fun StudyBuddyTopBar(
                 Icon(
                     imageVector = Icons.Default.Menu,
                     contentDescription = "Navagation",
+                    modifier = Modifier.size(30.dp)
+                )
+            }
+        },
+        actions = {
+            IconButton(onClick = {
+                loginNavController.navigate(ProfileDestination.route)
+            },
+            ) {
+                Icon(
+                    imageVector = Icons.Default.AccountBox,
+                    contentDescription = "Profile",
                     modifier = Modifier.size(30.dp)
                 )
             }
@@ -240,3 +268,22 @@ fun StudyBuddyNavigationBar(
         }
     }
 }
+
+//@Preview
+//@Composable
+//fun StudyBuddyScreenPrev() {
+//    StudyBuddyScreen(
+//        loginNavController = loginNavController,
+//        googleAuthUiClient = googleAuthUiClient
+//    ) {
+//        coroutineScope.launch {
+//            googleAuthUiClient.signout()
+//            android.widget.Toast.makeText(
+//                applicationContext,
+//                "Signed out",
+//                android.widget.Toast.LENGTH_LONG
+//            ).show()
+//            loginNavController.popBackStack()
+//        }
+//    }
+//}

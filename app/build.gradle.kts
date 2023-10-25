@@ -4,6 +4,8 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.devtools.ksp") version "1.8.21-1.0.11"
+    id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
 }
 
 android {
@@ -69,6 +71,9 @@ dependencies {
     //Room
     implementation("androidx.room:room-runtime:${rootProject.extra["room_version"]}")
     implementation("androidx.core:core-ktx:1.10.1")
+    implementation("com.google.firebase:firebase-auth:22.2.0")
+    implementation("com.google.firebase:firebase-crashlytics:18.5.0")
+    implementation("com.google.firebase:firebase-analytics:21.4.0")
     ksp("androidx.room:room-compiler:${rootProject.extra["room_version"]}")
     implementation("androidx.room:room-ktx:${rootProject.extra["room_version"]}")
 
@@ -76,4 +81,11 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     implementation("androidx.core:core-splashscreen:1.0.1")
+
+    //Firebase
+    implementation("com.google.firebase:firebase-auth-ktx:22.2.0")
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
+
+    //Coil
+    implementation("io.coil-kt:coil-compose:2.4.0")
 }

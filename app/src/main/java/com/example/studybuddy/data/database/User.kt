@@ -9,12 +9,11 @@ data class User(
     val userId: Int,
     val username: String,
     val email: String,
-    val passwordHash: String,
-    val fullName: String,
+    val fullName: String?,
     val bio: String?,
     val profilePicture: String?,
     val location: String?,
-    val createdAt: Long,
+    val createdAt: Long?,
     val lastLogin: Long?
 )
 

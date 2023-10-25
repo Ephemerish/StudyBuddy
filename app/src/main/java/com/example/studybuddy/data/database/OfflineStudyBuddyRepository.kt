@@ -16,12 +16,6 @@
 
 package com.example.studybuddy.data.database
 
-import com.example.studybuddy.data.database.Review
-import com.example.studybuddy.data.database.ReviewDao
-import com.example.studybuddy.data.database.Subject
-import com.example.studybuddy.data.database.SubjectDao
-import com.example.studybuddy.data.database.User
-import com.example.studybuddy.data.database.UserDao
 import kotlinx.coroutines.flow.Flow
 
 class OfflineStudyBuddyRepository(
@@ -30,24 +24,24 @@ class OfflineStudyBuddyRepository(
     private val reviewDao: ReviewDao
 ): StudyBuddyRepository {
     // User-related operations
-    override suspend fun insertUser(user: User) = userDao.upsertUser(user)
+    override suspend fun upsertUser(user: User) = userDao.upsertUser(user)
 
     override fun getUser(userId: Int): Flow<User?>  = userDao.getUser(userId)
 
+    override suspend fun deleteUser() = userDao.deleteUser()
+
     // Subject-related operations
-    override suspend fun insertSubject(subject: Subject) = subjectDao.upsertSubject(subject)
+    override suspend fun upsertSubject(subject: Subject) = subjectDao.upsertSubject(subject)
 
     override fun getSubject(subjectId: Int): Flow<Subject?> = subjectDao.getSubject(subjectId)
 
     // Top-rated subjects
     override fun getTopRatedSubjects(): Flow<List<SubjectDao.SubjectWithAverageRating>>  = subjectDao.getTopRatedSubjects()
 
-    override suspend fun insertSampleSubject() {
-        val user1 = User(1, "user1", "user1@example.com", "password1", "User 1", "Bio 1", null, "Location 1", 0L, 0L)
-        val user2 = User(2, "user2", "user2@example.com", "password2", "User 2", "Bio 2", null, "Location 2", 0L, 0L)
+    override suspend fun upsertSampleSubject() {
+        val user1 = User(1, "user1", "user1@example.com",  "User 1", "Bio 1", null, "Location 1", 0L, 0L)
 
         userDao.upsertUser(user1)
-        userDao.upsertUser(user2)
 
         val subject1 = Subject(1, "Math")
         val subject2 = Subject(2, "Science")

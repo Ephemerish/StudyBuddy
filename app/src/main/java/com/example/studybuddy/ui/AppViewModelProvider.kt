@@ -24,6 +24,7 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.studybuddy.StudyBuddyApplication
+import com.example.studybuddy.presentation.sign_in.SignInViewModel
 import com.example.studybuddy.ui.screen.HomeViewModel
 import com.example.studybuddy.ui.screen.RegistrationViewModel
 
@@ -36,6 +37,9 @@ object AppViewModelProvider {
         // Initializer for RegistrationViewModel
         initializer {
             RegistrationViewModel(inventoryApplication().container.studyBuddyRepository)
+        }
+        initializer {
+            SignInViewModel(inventoryApplication().container.studyBuddyRepository)
         }
     }
 }

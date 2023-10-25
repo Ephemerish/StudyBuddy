@@ -1,18 +1,15 @@
 package com.example.studybuddy.ui.screen
 
-import android.service.autofill.OnClickAction
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -27,6 +24,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -49,22 +48,107 @@ fun TutorListScreen(
         modifier = Modifier.padding(paddingValues)
     )
     {
-        repeat(6){
-            item {
-                TutorCard(
-                    onClickAction = {
-                        navController.navigate(TutorDetailDestination.route)
-                    }
-                )
-                Divider(thickness = 1.dp, color = Color.Gray)
-            }
+        item {
+            TutorCard(
+                onClickAction = {
+                    navController.navigate(TutorDetailDestination.route)
+                },
+                tutorName = "Kenneth  Harold Panis",
+                tutorDescription = "Description:\n" +
+                        "Embark on a coding journey with our programming guru. Learn Python, Java, C++, and more. Perfect for beginners or those looking to enhance their skills.",
+                tutorTime = "Schedule:\n" +
+                        "\n" +
+                        "Mondays: 6:00 PM - 7:30 PM\n" +
+                        "Wednesdays: 6:30 PM - 8:00 PM\n" +
+                        "Saturdays: 1:00 PM - 2:30 PM",
+                tutorImage = R.drawable.harold,
+            )
+            Divider(thickness = 1.dp, color = Color.Gray)
+
         }
+        item {
+            TutorCard(
+                onClickAction = {
+                    navController.navigate(TutorDetailDestination.route)
+                },
+                tutorName = "Virgilyn Tamayo",
+                tutorDescription = "Description:\n" +
+                        "Master the art of calculus with personalized, one-on-one tutoring. Whether you're tackling derivatives, integrals, or limits, our sessions will demystify complex math concepts.",
+                tutorTime = "Schedule:\n" +
+                        "\n" +
+                        "Mondays: 4:00 PM - 5:30 PM\n" +
+                        "Wednesdays: 3:30 PM - 5:00 PM\n" +
+                        "Saturdays: 10:00 AM - 11:30 AM",
+                tutorImage = R.drawable.ynah,
+
+                )
+            Divider(thickness = 1.dp, color = Color.Gray)
+        }
+        item {
+            TutorCard(
+                onClickAction = {
+                    navController.navigate(TutorDetailDestination.route)
+                },
+                tutorName = "Crisha Mae Acasio",
+                tutorDescription = "Description:\n" +
+                        "Explore the world of robotics! Our tutor will guide you through building and programming robots, combining hardware and software for exciting projects.",
+                tutorTime = "Schedule:\n" +
+                        "\n" +
+                        "Tuesdays: 6:00 PM - 7:30 PM\n" +
+                        "Thursdays: 6:30 PM - 8:00 PM\n" +
+                        "Sundays: 3:00 PM - 4:30 PM",
+                tutorImage = R.drawable.crisha
+
+            )
+            Divider(thickness = 1.dp, color = Color.Gray)
+        }
+        item {
+            TutorCard(
+                onClickAction = {
+                    navController.navigate(TutorDetailDestination.route)
+                },
+                tutorName = "Maria Jeziel Quimpan",
+                tutorDescription = "Description:\n" +
+                        "Level up your software development skills. Learn about web development, databases, and application design. Ideal for aspiring software engineers.",
+                tutorTime = "Schedule:\n" +
+                        "\n" +
+                        "Mondays: 7:00 PM - 8:30 PM\n" +
+                        "Wednesdays: 7:30 PM - 9:00 PM\n" +
+                        "Saturdays: 2:00 PM - 3:30 PM",
+                tutorImage = R.drawable.mj,
+
+                )
+            Divider(thickness = 1.dp, color = Color.Gray)
+        }
+        item {
+            TutorCard(
+                onClickAction = {
+                    navController.navigate(TutorDetailDestination.route)
+                },
+                tutorName = "Jhon Reyl Arcayena",
+                tutorDescription = "Description:\n" +
+                        "Build a strong foundation in algebra to excel in math. Our expert tutor will help you understand equations, functions, and problem-solving techniques.",
+                tutorTime = "Schedule:\n" +
+                        "\n" +
+                        "Tuesdays: 5:00 PM - 6:30 PM\n" +
+                        "Thursdays: 4:30 PM - 6:00 PM\n" +
+                        "Sundays: 2:00 PM - 3:30 PM",
+                tutorImage = R.drawable.jhon
+
+            )
+            Divider(thickness = 1.dp, color = Color.Gray)
+        }
+
     }
 }
 
 @Composable
 fun TutorCard(
-    onClickAction: ()->Unit
+    onClickAction: () -> Unit,
+    tutorName: String,
+    tutorDescription: String,
+    tutorTime: String,
+    tutorImage: Int
 ) {
     Card(
         modifier = Modifier
@@ -83,7 +167,7 @@ fun TutorCard(
                     modifier = Modifier.fillMaxSize()
                 ) {
                     Image(
-                        painter = painterResource(R.drawable._83945387_1317182618979724_2368759731661496754_n_removebg_preview),
+                        painter = painterResource(tutorImage),
                         contentDescription = "Tutor Pic",
                         contentScale = ContentScale.Fit,
                         modifier = Modifier.weight(1f)
@@ -102,16 +186,22 @@ fun TutorCard(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.fillMaxSize()
                 ) {
+                    Spacer(modifier = Modifier.padding(5.dp))
                     Text(
-                        text = "Name"
+                        text = tutorName,
+                        style = TextStyle(
+                            fontWeight= FontWeight.Bold
+                        )
+
                     )
+                    Spacer(modifier = Modifier.padding(5.dp))
                     Row(
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxSize()
                     ) {
                         Text(
-                            text = "Description",
+                            text = tutorDescription,
                             modifier = Modifier.weight(6f)
                         )
                         Column(
@@ -122,7 +212,7 @@ fun TutorCard(
                                 .weight(5f)
                         ) {
                             Text(
-                                text = "Time",
+                                text = tutorTime,
                                 modifier = Modifier.weight(1f)
                             )
                             Button(
@@ -142,11 +232,11 @@ fun TutorCard(
     }
 }
 
-@Preview
-@Composable
-fun TutorCardPrev() {
-    TutorCard({})
-}
+//@Preview
+//@Composable
+//fun TutorCardPrev() {
+//    TutorCard({}, "",)
+//}
 
 @Preview
 @Composable
