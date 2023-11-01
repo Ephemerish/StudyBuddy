@@ -77,7 +77,6 @@ fun StudyBuddyApp(
     NavHost(navController = loginNavController, startDestination = SignInDestination.route) {
         composable(SignInDestination.route){
             val state by viewModel.state.collectAsState()
-            Text(text = loggedUser.toString())
             LaunchedEffect(key1 = Unit){
                if (loggedUser != null){
                     loginNavController.navigate(StudyBuddyDestination.route)

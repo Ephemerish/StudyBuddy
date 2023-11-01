@@ -55,10 +55,6 @@ fun ProfileScreen(
         {
             Text(
                 text = userData.userName,
-
-            )
-            Text(
-                text = userData.userName,
                 textAlign = TextAlign.Center,
                 style = TextStyle(
                     fontSize = 36.sp,

@@ -52,7 +52,7 @@ import androidx.room.RoomDatabase
 
 @Database(
     entities = [User::class, Subject::class, UserSubjects::class, StudySession::class, SessionParticipants::class, Review::class],
-    version = 4
+    version = 5
 )
 abstract class StudyBuddyDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao

@@ -14,8 +14,14 @@
  * limitations under the License.
  */
 
-package com.example.studybuddy.data.database
+package com.example.studybuddy.data
 
+import com.example.studybuddy.data.database.Review
+import com.example.studybuddy.data.database.ReviewDao
+import com.example.studybuddy.data.database.Subject
+import com.example.studybuddy.data.database.SubjectDao
+import com.example.studybuddy.data.database.User
+import com.example.studybuddy.data.database.UserDao
 import kotlinx.coroutines.flow.Flow
 
 class OfflineStudyBuddyRepository(
@@ -39,20 +45,21 @@ class OfflineStudyBuddyRepository(
     override fun getTopRatedSubjects(): Flow<List<SubjectDao.SubjectWithAverageRating>>  = subjectDao.getTopRatedSubjects()
 
     override suspend fun upsertSampleSubject() {
-        val user1 = User(1, "user1", "user1@example.com",  "User 1", "Bio 1", null, "Location 1", 0L, 0L)
+        val user1 = User("sampleUser", "user1@example.com",  "User 1",
+            "Bio 1", null, "Location 1", 0L, 0L)
 
         userDao.upsertUser(user1)
 
-        val subject1 = Subject(1, "Math")
-        val subject2 = Subject(2, "Science")
-        val subject3 = Subject(3, "History")
-        val subject4 = Subject(4, "English")
-        val subject5 = Subject(5, "Computer Science")
-        val subject6 = Subject(6, "Physics")
-        val subject7 = Subject(7, "Biology")
-        val subject8 = Subject(8, "Chemistry")
-        val subject9 = Subject(9, "Geography")
-        val subject10 = Subject(10, "Literature")
+        val subject1 = Subject(1, "Math", null)
+        val subject2 = Subject(2, "Science", null)
+        val subject3 = Subject(3, "History", null)
+        val subject4 = Subject(4, "English", null)
+        val subject5 = Subject(5, "Computer Science", null)
+        val subject6 = Subject(6, "Physics", null)
+        val subject7 = Subject(7, "Biology", null)
+        val subject8 = Subject(8, "Chemistry",null)
+        val subject9 = Subject(9, "Geography", null)
+        val subject10 = Subject(10, "Literature", null)
 
         subjectDao.upsertSubject(subject1)
         subjectDao.upsertSubject(subject2)
@@ -65,18 +72,18 @@ class OfflineStudyBuddyRepository(
         subjectDao.upsertSubject(subject9)
         subjectDao.upsertSubject(subject10)
 
-        val review1 = Review(1, 2, 1,1, "Great subject!", 0L)
-        val review2 = Review(2, 1, 2,2, "Good subject.", 0L)
-        val review3 = Review(3, 3, 3,3, "I enjoyed it.", 0L)
-        val review4 = Review(4, 2, 4,4, "Not bad.", 0L)
-        val review5 = Review(5, 4, 4,1, "Great subject!", 0L)
-        val review6 = Review(6, 5, 6,2, "Good subject.", 0L)
-        val review7 = Review(7, 2, 4,3, "I enjoyed it.", 0L)
-        val review8 = Review(8, 1, 2,4, "Not bad.", 0L)
-        val review9 = Review(9, 5, 1,1, "Great subject!", 0L)
-        val review10 = Review(10, 7, 9,2, "Good subject.", 0L)
-        val review11 = Review(11, 8, 1,3, "I enjoyed it.", 0L)
-        val review12 = Review(12, 1, 9,4, "Not bad.", 0L)
+        val review1 = Review(1, "2", "1",1, "Great subject!", 0L)
+        val review2 = Review(2, "1", "2",2, "Good subject.", 0L)
+        val review3 = Review(3, "3", "3",3, "I enjoyed it.", 0L)
+        val review4 = Review(4, "2", "4",4, "Not bad.", 0L)
+        val review5 = Review(5, "4", "4",1, "Great subject!", 0L)
+        val review6 = Review(6, "5", "6",2, "Good subject.", 0L)
+        val review7 = Review(7, "2", "4",3, "I enjoyed it.", 0L)
+        val review8 = Review(8, "1", "2",4, "Not bad.", 0L)
+        val review9 = Review(9, "5", "1",1, "Great subject!", 0L)
+        val review10 = Review(10, "7", "9",2, "Good subject.", 0L)
+        val review11 = Review(11, "8", "1",3, "I enjoyed it.", 0L)
+        val review12 = Review(12, "1", "9",4, "Not bad.", 0L)
 
         reviewDao.upsertReview(review1)
         reviewDao.upsertReview(review2)

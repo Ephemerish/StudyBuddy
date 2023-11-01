@@ -17,6 +17,8 @@
     package com.example.studybuddy.ui.screen
 
     import android.annotation.SuppressLint
+    import android.content.Context
+    import android.net.Uri
     import androidx.compose.foundation.Image
     import androidx.compose.foundation.layout.Arrangement
     import androidx.compose.foundation.layout.Column
@@ -29,7 +31,6 @@
     import androidx.compose.foundation.layout.padding
     import androidx.compose.foundation.layout.size
     import androidx.compose.foundation.layout.sizeIn
-    import androidx.compose.foundation.layout.width
     import androidx.compose.foundation.layout.wrapContentSize
     import androidx.compose.foundation.lazy.grid.GridCells
     import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -48,6 +49,7 @@
     import androidx.compose.ui.Alignment
     import androidx.compose.ui.Modifier
     import androidx.compose.ui.layout.ContentScale
+    import androidx.compose.ui.platform.LocalContext
     import androidx.compose.ui.res.painterResource
     import androidx.compose.ui.text.TextStyle
     import androidx.compose.ui.text.font.FontWeight
@@ -59,7 +61,10 @@
     import androidx.lifecycle.viewmodel.compose.viewModel
     import androidx.navigation.NavHostController
     import androidx.navigation.compose.rememberNavController
+    import coil.compose.AsyncImage
+    import coil.request.ImageRequest
     import com.example.studybuddy.R
+    import com.example.studybuddy.data.UriPathFinder
     import com.example.studybuddy.data.database.SubjectDao
     import com.example.studybuddy.ui.AppViewModelProvider
     import com.example.studybuddy.ui.navigation.NavigationDestination
@@ -78,6 +83,7 @@
         navController: NavHostController,
         viewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.Factory)
     ) {
+        val context = LocalContext.current
         val homeUiState by viewModel.homeUiState.collectAsState()
         val coroutineScope = rememberCoroutineScope()
         Column(
@@ -94,7 +100,7 @@
                     .padding(top = 5.dp)
             ) {
                 Column(
-                    verticalArrangement = Arrangement.Center,
+                    verticalArrangement = Arrangement.Top,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Image(painter = painterResource(R.drawable._83945387_1317182618979724_2368759731661496754_n_removebg_preview),
@@ -126,12 +132,13 @@
                     if(homeUiState.itemList.isNotEmpty()){
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(3),
-                        verticalArrangement = Arrangement.spacedBy(10.dp),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp),
-                        modifier = Modifier.padding(5 .dp)
+                        verticalArrangement = Arrangement.spacedBy(5.dp),
+                        horizontalArrangement = Arrangement.spacedBy(5.dp),
+                        modifier = Modifier.padding(1.dp)
                     ) {
                         items(homeUiState.itemList) {
                             CourseCard(
+                                context = context,
                                 featureCourse = it,
                                 onClickAction = {
                                     navController.navigate(TutorListDestination.route) {
@@ -216,8 +223,9 @@
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun CourseCard(
-        featureCourse:  SubjectDao.SubjectWithAverageRating,
-        onClickAction: ()->Unit
+        featureCourse: SubjectDao.SubjectWithAverageRating,
+        onClickAction: () -> Unit,
+        context: Context
     ) {
         Card(
             onClick = onClickAction,
@@ -229,9 +237,21 @@
                 modifier = Modifier
                     .fillMaxSize()
             ) {
-                Image(
-                    painter = painterResource(R.drawable._83945387_1317182618979724_2368759731661496754_n_removebg_preview),
-                    contentDescription = "Cource Photo",
+//                Image(
+//                    painter = painterResource(R.drawable._83945387_1317182618979724_2368759731661496754_n_removebg_preview),
+//                    contentDescription = "Cource Photo",
+//                    contentScale = ContentScale.Crop,
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .weight(7f)
+//                )
+                AsyncImage(
+                    model =  ImageRequest.Builder(context = context)
+                        .data(featureCourse.subject.img)
+                        .crossfade(true)
+                        .build(),
+                    error = painterResource(R.drawable._83945387_1317182618979724_2368759731661496754_n_removebg_preview),
+                    contentDescription = "Course Photo",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -254,19 +274,19 @@
                         overflow = TextOverflow.Ellipsis, // Use an ellipsis for overflowing text
                         maxLines = 1 // Restrict the text to a single line
                     )
-                    Text(
-                        text = featureCourse.averageRating.toString(),
-                        modifier = Modifier
-                            .padding(0.dp)
-                            .fillMaxWidth()
-                            .weight(2f),
-                        textAlign = TextAlign.Center,
-                        style = TextStyle(
-                            fontWeight = FontWeight.Bold
-                        ),
-                        overflow = TextOverflow.Ellipsis, // Use an ellipsis for overflowing text
-                        maxLines = 1 // Restrict the text to a single line
-                    )
+//                    Text(
+//                        text = featureCourse.averageRating.toString(),
+//                        modifier = Modifier
+//                            .padding(0.dp)
+//                            .fillMaxWidth()
+//                            .weight(2f),
+//                        textAlign = TextAlign.Center,
+//                        style = TextStyle(
+//                            fontWeight = FontWeight.Bold
+//                        ),
+//                        overflow = TextOverflow.Ellipsis, // Use an ellipsis for overflowing text
+//                        maxLines = 1 // Restrict the text to a single line
+//                    )
                 }
             }
         }

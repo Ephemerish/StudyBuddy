@@ -4,7 +4,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.example.studybuddy.data.database.StudyBuddyRepository
+import com.example.studybuddy.data.StudyBuddyRepository
+import com.example.studybuddy.data.database.Subject
 
 class RegistrationViewModel(
     private val studyBuddyRepository: StudyBuddyRepository
@@ -40,8 +41,16 @@ class RegistrationViewModel(
         studyBuddyRepository.upsertSampleSubject()
     }
 
-    suspend fun clearSampleSubjects(){
+    suspend fun clearSubjects(){
         studyBuddyRepository.clearAllSubjects()
+    }
+
+    suspend fun upsertSubject(){
+        studyBuddyRepository.upsertSubject(Subject(
+            subjectId = 0,
+            name = itemUiState.itemDetails.name,
+            img = itemUiState.itemDetails.img
+        ))
     }
 }
 data class ItemUiState(
@@ -54,4 +63,5 @@ data class ItemDetails(
     val name: String = "",
     val price: String = "",
     val quantity: String = "",
+    val img: String? = ""
 )

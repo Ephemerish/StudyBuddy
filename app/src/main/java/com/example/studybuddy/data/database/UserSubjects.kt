@@ -8,7 +8,7 @@ import androidx.room.Index
     indices = [Index(value = ["subjectId"])]
 )
 data class UserSubjects(
-    val userId: Int,
+    val userId: String,
     val subjectId: Int
 )
 

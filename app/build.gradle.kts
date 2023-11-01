@@ -80,6 +80,8 @@ dependencies {
     // Testing
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
+
+    // SplashScreen
     implementation("androidx.core:core-splashscreen:1.0.1")
 
     //Firebase
@@ -88,4 +90,7 @@ dependencies {
 
     //Coil
     implementation("io.coil-kt:coil-compose:2.4.0")
+
+    //permission handling in compose
+    implementation ("com.google.accompanist:accompanist-permissions:0.24.13-rc")
 }

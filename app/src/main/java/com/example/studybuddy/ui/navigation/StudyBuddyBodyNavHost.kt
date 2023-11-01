@@ -23,6 +23,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.studybuddy.data.NavDrawerType
+import com.example.studybuddy.presentation.sign_in.GoogleAuthUiClient
 import com.example.studybuddy.ui.StudyBuddyUiState
 import com.example.studybuddy.ui.screen.ContactUsDestination
 import com.example.studybuddy.ui.screen.ContactUsScreen
@@ -53,7 +54,8 @@ fun StudyBuddyBodyNavHost(
     viewModel: StudyBuddyViewModel,
     navDrawerUiState: StudyBuddyUiState,
     scope: CoroutineScope,
-    innerPaddingValues: PaddingValues
+    innerPaddingValues: PaddingValues,
+    googleAuthUiClient: GoogleAuthUiClient
 ) {
     NavHost(
         navController = navController,
@@ -85,7 +87,10 @@ fun StudyBuddyBodyNavHost(
             )
         }
         composable(route = RegistrationDestination.route) {
-            RegistrationScreen(navController = navController)
+            RegistrationScreen(
+                navController = navController,
+                googleAuthUiClient = googleAuthUiClient
+            )
             viewModel.updateCurrentNavDrawer(
                 navDrawerType = NavDrawerType.Home,
             )

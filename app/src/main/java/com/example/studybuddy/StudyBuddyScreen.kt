@@ -122,7 +122,8 @@ fun StudyBuddyScreen(
                         viewModel = viewModel,
                         navDrawerUiState = navDrawerUiState,
                         scope = scope,
-                        innerPaddingValues = PaddingValues()
+                        innerPaddingValues = PaddingValues(),
+                        googleAuthUiClient =  googleAuthUiClient
                     )
                 }
             }

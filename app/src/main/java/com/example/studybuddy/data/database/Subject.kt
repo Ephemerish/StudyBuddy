@@ -8,6 +8,7 @@ import androidx.room.PrimaryKey
 data class Subject(
     @PrimaryKey(autoGenerate = true)
     val subjectId: Int,
-    val name: String
+    val name: String,
+    val img: String?
 )
 
