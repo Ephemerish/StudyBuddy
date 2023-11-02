@@ -15,6 +15,9 @@ interface SubjectDao {
     @Query("SELECT * FROM Subject WHERE subjectId = :subjectId")
     fun getSubject(subjectId: Int):Flow<Subject?>
 
+    @Query("SELECT * FROM Subject WHERE name = :subjectName")
+    fun getSubjectWithName(subjectName: String):Flow<Subject?>
+
     @Query("SELECT s.*, AVG(r.rating) AS average_rating " +
             "FROM Subject s " +
             "LEFT JOIN Review r ON s.subjectId = r.toUserId " +

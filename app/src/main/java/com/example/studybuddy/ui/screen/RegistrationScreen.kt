@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -24,23 +23,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.studybuddy.R
 import com.example.studybuddy.ui.AppViewModelProvider
 import com.example.studybuddy.ui.navigation.NavigationDestination
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
 import kotlinx.coroutines.launch
-import java.util.Currency
-import java.util.Locale
 import android.Manifest
 import android.content.Context
-import android.graphics.Paint.Align
 import android.net.Uri
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -55,6 +48,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
@@ -67,6 +61,7 @@ import com.example.studybuddy.data.UriPathFinder
 import com.example.studybuddy.presentation.sign_in.GoogleAuthUiClient
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
+import com.google.firebase.database.DatabaseReference
 
 object RegistrationDestination : NavigationDestination {
     override val route = "registration"
@@ -78,7 +73,8 @@ fun RegistrationScreen(
     paddingValues: PaddingValues = PaddingValues(),
     navController: NavHostController,
     viewModel: RegistrationViewModel = viewModel(factory = AppViewModelProvider.Factory),
-    googleAuthUiClient: GoogleAuthUiClient
+    googleAuthUiClient: GoogleAuthUiClient,
+    firebase: DatabaseReference
 ) {
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -100,9 +96,12 @@ fun RegistrationScreen(
             val address = uriPathFinder.getPath(context,uri)
             coroutineScope.launch{
                 //  viewModel.saveItem(Photo(uri = it))
-                viewModel.updateUiState(ItemDetails(
-                    img = address
-                ))
+                viewModel.updateUiState(
+                    viewModel.itemUiState.itemDetails.copy(
+                        img = address ?: "null",
+                        uri = uri
+                    )
+                )
             }
         }
     )
@@ -125,6 +124,9 @@ fun RegistrationScreen(
                         .heightIn(max = 250.dp, min = 250.dp)
                 )
                 Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(max = 250.dp, min = 250.dp),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
@@ -171,34 +173,45 @@ fun RegistrationScreen(
                 modifier = Modifier.fillMaxWidth(),
                 permissionState = permissionState,
                 filePickerLauncher = filePickerLauncher,
-                context = context
+                context = context,
+                enabled = viewModel.itemUiState.isEntryValid
             )
         }
         item {
+//            Button(onClick = {
+//                coroutineScope.launch {
+//                    viewModel.clearSubjects()
+//                    navController.navigateUp()
+//                }
+//            }) {
+//                Text(text = "clearSampleSubject")
+//            }
+//            Button(onClick = {
+//                coroutineScope.launch {
+//                    viewModel.insertSampleSubjects()
+//                    navController.navigateUp()
+//                }
+//            }) {
+//                Text(text = "insertSampleData")
+//            }
+            Spacer(modifier = Modifier.height(5.dp))
             Button(onClick = {
                 coroutineScope.launch {
-                    viewModel.clearSubjects()
+                    viewModel.upsertUserSubject(firebase = firebase)
                     navController.navigateUp()
                 }
-            }) {
-                Text(text = "clearSampleSubject")
+            },
+                enabled = viewModel.itemUiState.isEntryValid
+            ) {
+                Text(
+                    text = "Upsert Subject",
+                    style = TextStyle(
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
             }
-            Button(onClick = {
-                coroutineScope.launch {
-                    viewModel.insertSampleSubjects()
-                    navController.navigateUp()
-                }
-            }) {
-                Text(text = "insertSampleData")
-            }
-            Button(onClick = {
-                coroutineScope.launch {
-                    viewModel.upsertSubject()
-                    navController.navigateUp()
-                }
-            }) {
-                Text(text = "upsert name")
-            }
+            Spacer(modifier = Modifier.height(10.dp))
         }
     }
 }
@@ -216,13 +229,36 @@ fun ItemInputForm(
 ) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(20.dp),
+        verticalArrangement = Arrangement.spacedBy(5.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Card(onClick = {
+            if (permissionState.status.isGranted) {
+                filePickerLauncher.launch("*/*")
+            }
+            else{
+                permissionState.launchPermissionRequest()
+            }
+        }) {
+            Spacer(modifier = Modifier.padding(5.dp))
+            AsyncImage(
+                model =  ImageRequest.Builder(context = context)
+                    .data(itemDetails.img)
+                    .crossfade(true)
+                    .build(),
+                error = painterResource(R.drawable.upload_image),
+                contentDescription = "",
+                contentScale = ContentScale.Crop,
+                alignment = Alignment.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(max = 250.dp)
+            )
+        }
         OutlinedTextField(
-            value = itemDetails.name,
+            value = itemDetails.subjectName,
             onValueChange = {
-                onValueChange(itemDetails.copy(name = it))
+                onValueChange(itemDetails.copy(subjectName = it))
             },
             label = {
                 Text("Subject")
@@ -233,37 +269,15 @@ fun ItemInputForm(
                 disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
             ),
             modifier = Modifier.fillMaxWidth(),
-            enabled = enabled,
             singleLine = true
         )
-        if (enabled) {
+        if (!enabled) {
             Text(
                 text = "*required field",
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 5.dp),
                 textAlign = TextAlign.Left
-            )
-        }
-        Card(onClick = {
-            if (permissionState.status.isGranted) {
-                filePickerLauncher.launch("*/*")
-            }
-            else{
-                permissionState.launchPermissionRequest()
-            }
-        }) {
-            AsyncImage(
-                model =  ImageRequest.Builder(context = context)
-                    .data(itemDetails.img)
-                    .crossfade(true)
-                    .build(),
-                error = painterResource(R.drawable._83945387_1317182618979724_2368759731661496754_n_removebg_preview),
-                contentDescription = "",
-                contentScale = ContentScale.Crop,
-                alignment = Alignment.Center,
-                modifier = Modifier.fillMaxWidth()
-                    .heightIn(max = 250.dp)
             )
         }
 //        OutlinedTextField(

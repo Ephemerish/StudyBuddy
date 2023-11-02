@@ -44,6 +44,7 @@ import com.example.studybuddy.ui.StudyBuddyUiState
 import com.example.studybuddy.ui.navigation.NavigationDestination
 import com.example.studybuddy.ui.navigation.StudyBuddyBodyNavHost
 import com.example.studybuddy.ui.theme.StudyBuddyViewModel
+import com.google.firebase.database.DatabaseReference
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -59,7 +60,8 @@ fun StudyBuddyScreen(
     modifier: Modifier = Modifier,
     loginNavController: NavHostController,
     googleAuthUiClient: GoogleAuthUiClient,
-    onSignOut: () -> Job
+    onSignOut: () -> Job,
+    firebase: DatabaseReference
 ) {
     val viewModel: StudyBuddyViewModel = viewModel()
     val navDrawerUiState = viewModel.uiState.collectAsState().value
@@ -118,6 +120,7 @@ fun StudyBuddyScreen(
                         .fillMaxSize()
                 ) {
                     StudyBuddyBodyNavHost(
+                        firebase = firebase,
                         navController = navController,
                         viewModel = viewModel,
                         navDrawerUiState = navDrawerUiState,

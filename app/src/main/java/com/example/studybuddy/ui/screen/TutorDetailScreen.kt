@@ -141,7 +141,7 @@ fun TutorDetailScreen(
         EnrollConfirmationDialog(
             onDeleteConfirm = {
                 deleteConfirmationRequired = false
-                navController.navigate(MessageDestination.route) {
+                navController.navigate(RequestDestination.route) {
                     navController.graph.startDestinationRoute?.let { route ->
                         popUpTo(route) {
                             saveState = true

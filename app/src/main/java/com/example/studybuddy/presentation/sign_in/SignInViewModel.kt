@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 
 class SignInViewModel(private val studyBuddyRepository: StudyBuddyRepository): ViewModel() {
 
-    val user = studyBuddyRepository.getUser(0)
+    val user = studyBuddyRepository.getUser()
 
     private val _state = MutableStateFlow(SignInState())
     val state = _state.asStateFlow()

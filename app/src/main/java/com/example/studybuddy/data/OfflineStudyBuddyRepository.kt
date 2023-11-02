@@ -22,17 +22,20 @@ import com.example.studybuddy.data.database.Subject
 import com.example.studybuddy.data.database.SubjectDao
 import com.example.studybuddy.data.database.User
 import com.example.studybuddy.data.database.UserDao
+import com.example.studybuddy.data.database.UserSubjects
+import com.example.studybuddy.data.database.UserSubjectsDao
 import kotlinx.coroutines.flow.Flow
 
 class OfflineStudyBuddyRepository(
     private val userDao: UserDao,
     private val subjectDao: SubjectDao,
-    private val reviewDao: ReviewDao
+    private val reviewDao: ReviewDao,
+    private val userSubjectsDao: UserSubjectsDao
 ): StudyBuddyRepository {
     // User-related operations
     override suspend fun upsertUser(user: User) = userDao.upsertUser(user)
 
-    override fun getUser(userId: Int): Flow<User?>  = userDao.getUser(userId)
+    override fun getUser(): Flow<User?>  = userDao.getUser()
 
     override suspend fun deleteUser() = userDao.deleteUser()
 
@@ -40,6 +43,24 @@ class OfflineStudyBuddyRepository(
     override suspend fun upsertSubject(subject: Subject) = subjectDao.upsertSubject(subject)
 
     override fun getSubject(subjectId: Int): Flow<Subject?> = subjectDao.getSubject(subjectId)
+    override fun getSubjectWithName(subjectName: String): Flow<Subject?> =
+        subjectDao.getSubjectWithName(subjectName)
+
+    override suspend fun upsertUserSubject(userSubjects: UserSubjects) =
+        userSubjectsDao.upsertUserSubjects(userSubjects)
+
+    override  fun getAllUserSubjects(): Flow<List<UserSubjects>> =
+        userSubjectsDao.getAllUserSubjects()
+
+    override  fun getUserSubjectsByUserId(userId: String): Flow<List<UserSubjects>> =
+        userSubjectsDao.getUserSubjectsByUserId(userId)
+
+    override  fun getUserSubjectsBySubjectId(subjectId: Int): Flow<List<UserSubjects>> =
+        userSubjectsDao.getUserSubjectsBySubjectId(subjectId)
+
+    override suspend fun deleteUserSubject(userSubjects: UserSubjects) = userSubjectsDao
+        .deleteUserSubject(userSubjects)
+
 
     // Top-rated subjects
     override fun getTopRatedSubjects(): Flow<List<SubjectDao.SubjectWithAverageRating>>  = subjectDao.getTopRatedSubjects()

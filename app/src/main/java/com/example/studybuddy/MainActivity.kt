@@ -14,7 +14,6 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -35,8 +34,9 @@ import com.example.studybuddy.presentation.sign_in.SignInDestination
 import com.example.studybuddy.presentation.sign_in.SignInScreen
 import com.example.studybuddy.presentation.sign_in.SignInViewModel
 import com.example.studybuddy.ui.AppViewModelProvider
-import com.example.studybuddy.ui.screen.HomeViewModel
 import com.example.studybuddy.ui.theme.StudyBuddyTheme
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -46,6 +46,7 @@ class MainActivity : ComponentActivity() {
             onTapClient = com.google.android.gms.auth.api.identity.Identity.getSignInClient(applicationContext)
         )
     }
+    val firebase: DatabaseReference = FirebaseDatabase.getInstance().getReference()
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,7 +59,11 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    StudyBuddyApp(googleAuthUiClient, applicationContext)
+                    StudyBuddyApp(
+                        firebase= firebase,
+                        googleAuthUiClient = googleAuthUiClient,
+                        applicationContext = applicationContext
+                    )
                 }
             }
         }
@@ -69,7 +74,8 @@ class MainActivity : ComponentActivity() {
 fun StudyBuddyApp(
     googleAuthUiClient: GoogleAuthUiClient,
     applicationContext: Context,
-    viewModel: SignInViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    viewModel: SignInViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    firebase: DatabaseReference
 ) {
     val loggedUser by viewModel.user.collectAsState(null)
     val loginNavController = rememberNavController()
@@ -125,6 +131,7 @@ fun StudyBuddyApp(
         }
         composable(StudyBuddyDestination.route){
             StudyBuddyScreen(
+                firebase = firebase,
                 loginNavController = loginNavController,
                 googleAuthUiClient = googleAuthUiClient,
                 onSignOut = {

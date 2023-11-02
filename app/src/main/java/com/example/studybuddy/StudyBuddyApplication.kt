@@ -19,6 +19,7 @@ package com.example.studybuddy
 import android.app.Application
 import com.example.studybuddy.data.AppContainer
 import com.example.studybuddy.data.AppDataContainer
+import com.google.firebase.FirebaseApp
 
 class StudyBuddyApplication : Application() {
 
@@ -30,5 +31,6 @@ class StudyBuddyApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         container = AppDataContainer(this)
+        FirebaseApp.initializeApp(this)
     }
 }

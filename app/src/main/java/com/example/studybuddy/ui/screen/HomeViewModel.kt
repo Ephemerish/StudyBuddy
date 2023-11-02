@@ -16,10 +16,21 @@
 
 package com.example.studybuddy.ui.screen
 
+import android.net.Uri
+import android.util.Log
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.studybuddy.data.StudyBuddyRepository
 import com.example.studybuddy.data.database.SubjectDao
+import com.google.firebase.Firebase
+import com.google.firebase.crashlytics.internal.Logger.TAG
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.database
+import com.google.firebase.database.getValue
+import com.google.firebase.storage.storage
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -29,6 +40,45 @@ import kotlinx.coroutines.flow.stateIn
  * ViewModel to retrieve all items in the Room database.
  */
 class HomeViewModel(private val studyBuddyRepository: StudyBuddyRepository): ViewModel() {
+    val subjectList = mutableStateOf<List<SubjectFirebase>>(emptyList())
+
+    // Add a function to fetch data
+    fun fetchDataFromDatabase() {
+        val database = Firebase.database("https://study-buddy-79089-default-rtdb.asia-southeast1.firebasedatabase.app/")
+        val myRef = database.getReference("StudyBuddy/subjects")
+        val storage = Firebase.storage("gs://study-buddy-79089.appspot.com/")
+        val storageRef = storage.getReference("StudyBuddy")
+
+        myRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val subjects = mutableListOf<SubjectFirebase>()
+                for (subjectData in snapshot.children) {
+                    val subject = subjectData.getValue(SubjectFirebase::class.java)
+                    subject?.let {
+                        subjects.add(it)
+                        val subjectImgReference = storageRef.child(
+                            "subjects/${it.subjectName}/image.jpg")
+                        subjectImgReference.downloadUrl
+                            .addOnSuccessListener { uri ->
+                                val downloadUrl = uri.toString()
+                                // Now, downloadUrl contains the URL of your file
+                                val SubjectReference = myRef.child("${it.subjectName}")
+                                val subjectData = mapOf(
+                                    "subjectName" to it.subjectName,
+                                    "imgLink" to downloadUrl
+                                )
+                                SubjectReference.setValue(subjectData)
+                            }
+                    }
+                }
+                subjectList.value = subjects
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.w(TAG, "Failed to read value.", error.toException())
+            }
+        })
+    }
 
     val homeUiState: StateFlow<SubjectUiState> =
         studyBuddyRepository.getTopRatedSubjects().map {SubjectUiState(it)}
@@ -61,3 +111,7 @@ class HomeViewModel(private val studyBuddyRepository: StudyBuddyRepository): Vie
  * Ui State for HomeScreen
  */
 data class SubjectUiState(val itemList: List<SubjectDao.SubjectWithAverageRating> = listOf())
+data class SubjectFirebase(
+    val subjectName: String? = null,
+    val imgLink: String? = null
+)

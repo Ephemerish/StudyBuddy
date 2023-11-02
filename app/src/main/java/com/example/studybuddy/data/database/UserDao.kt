@@ -11,8 +11,10 @@ interface UserDao {
     @Upsert
     suspend fun upsertUser(user: User)
 
-    @Query("SELECT * FROM User WHERE userId > :userId")
-    fun getUser(userId: Int): Flow<User?>
+
+
+    @Query("SELECT * FROM User")
+    fun getUser(): Flow<User?>
 
     @Query("DELETE FROM User")
     suspend fun deleteUser()

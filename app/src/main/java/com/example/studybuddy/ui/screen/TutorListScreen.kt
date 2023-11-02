@@ -42,7 +42,8 @@ object TutorListDestination : NavigationDestination {
 @Composable
 fun TutorListScreen(
     paddingValues: PaddingValues = PaddingValues(),
-    navController: NavHostController
+    navController: NavHostController,
+    selectedSubject: String
 ) {
     LazyColumn(
         modifier = Modifier.padding(paddingValues)
@@ -53,7 +54,7 @@ fun TutorListScreen(
                 onClickAction = {
                     navController.navigate(TutorDetailDestination.route)
                 },
-                tutorName = "Kenneth  Harold Panis",
+                tutorName = "Kenneth  Harold Panis $selectedSubject",
                 tutorDescription = "Description:\n" +
                         "Embark on a coding journey with our programming guru. Learn Python, Java, C++, and more. Perfect for beginners or those looking to enhance their skills.",
                 tutorTime = "Schedule:\n" +
@@ -241,5 +242,5 @@ fun TutorCard(
 @Preview
 @Composable
 fun TutorListScreenPrev() {
-    TutorListScreen(navController = rememberNavController())
+    TutorListScreen(navController = rememberNavController(), selectedSubject = "test")
 }

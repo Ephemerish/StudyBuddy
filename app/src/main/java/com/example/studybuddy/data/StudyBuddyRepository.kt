@@ -19,6 +19,7 @@ package com.example.studybuddy.data
 import com.example.studybuddy.data.database.Subject
 import com.example.studybuddy.data.database.SubjectDao
 import com.example.studybuddy.data.database.User
+import com.example.studybuddy.data.database.UserSubjects
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -29,7 +30,7 @@ interface StudyBuddyRepository {
 
     suspend fun upsertUser(user: User)
 
-    fun getUser(userId: Int): Flow<User?>
+    fun getUser(): Flow<User?>
 
     suspend fun deleteUser()
 
@@ -38,6 +39,19 @@ interface StudyBuddyRepository {
     suspend fun upsertSubject(subject: Subject)
 
     fun getSubject(subjectId: Int): Flow<Subject?>
+
+    fun getSubjectWithName(subjectName: String):Flow<Subject?>
+
+    // userSubject
+    suspend fun upsertUserSubject(userSubjects: UserSubjects)
+
+    fun getAllUserSubjects(): Flow<List<UserSubjects>>
+
+    fun getUserSubjectsByUserId(userId: String): Flow<List<UserSubjects>>
+
+    fun getUserSubjectsBySubjectId(subjectId: Int): Flow<List<UserSubjects>>
+
+    suspend fun deleteUserSubject(userSubjects: UserSubjects)
 
     // Top-rated subjects
 

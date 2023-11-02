@@ -1,15 +1,15 @@
 package com.example.studybuddy.data
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Call
-import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.example.studybuddy.ui.navigation.NavigationDestination
 import com.example.studybuddy.ui.screen.ContactUsDestination
 import com.example.studybuddy.ui.screen.HomeDestination
-import com.example.studybuddy.ui.screen.MessageDestination
+import com.example.studybuddy.ui.screen.RequestDestination
 import com.example.studybuddy.ui.screen.MyClassDestination
 
 data class NavigationItemContent(
@@ -20,7 +20,7 @@ data class NavigationItemContent(
 )
 
 enum class NavDrawerType {
-    Home, Message, MyClass, ContactUs
+    Home, Request, MyClass, ContactUs
 }
 
 val navigationItemContentList = listOf(
@@ -31,14 +31,14 @@ val navigationItemContentList = listOf(
         destination = HomeDestination
     ),
     NavigationItemContent(
-        navDrawerType = NavDrawerType.Message,
-        icon = Icons.Default.Email,
-        text = "Message",
-        destination = MessageDestination
+        navDrawerType = NavDrawerType.Request,
+        icon = Icons.Default.Person,
+        text = "Request",
+        destination = RequestDestination
     ),
     NavigationItemContent(
         navDrawerType = NavDrawerType.MyClass,
-        icon = Icons.Filled.AccountBox,
+        icon = Icons.Filled.DateRange,
         text = "MyClass",
         destination = MyClassDestination
     )
@@ -46,14 +46,14 @@ val navigationItemContentList = listOf(
 
 val sideNavigationItemContentList = listOf(
     NavigationItemContent(
-        navDrawerType = NavDrawerType.Message,
-        icon = Icons.Default.Email,
-        text = "Message",
-        destination = MessageDestination
+        navDrawerType = NavDrawerType.Request,
+        icon = Icons.Default.Person,
+        text = "Request",
+        destination = RequestDestination
     ),
     NavigationItemContent(
         navDrawerType = NavDrawerType.MyClass,
-        icon = Icons.Filled.AccountBox,
+        icon = Icons.Filled.DateRange,
         text = "MyClass",
         destination = MyClassDestination
     ),

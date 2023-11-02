@@ -18,7 +18,6 @@
 
     import android.annotation.SuppressLint
     import android.content.Context
-    import android.net.Uri
     import androidx.compose.foundation.Image
     import androidx.compose.foundation.layout.Arrangement
     import androidx.compose.foundation.layout.Column
@@ -43,6 +42,7 @@
     import androidx.compose.material3.Surface
     import androidx.compose.material3.Text
     import androidx.compose.runtime.Composable
+    import androidx.compose.runtime.LaunchedEffect
     import androidx.compose.runtime.collectAsState
     import androidx.compose.runtime.getValue
     import androidx.compose.runtime.rememberCoroutineScope
@@ -64,8 +64,6 @@
     import coil.compose.AsyncImage
     import coil.request.ImageRequest
     import com.example.studybuddy.R
-    import com.example.studybuddy.data.UriPathFinder
-    import com.example.studybuddy.data.database.SubjectDao
     import com.example.studybuddy.ui.AppViewModelProvider
     import com.example.studybuddy.ui.navigation.NavigationDestination
 
@@ -83,6 +81,13 @@
         navController: NavHostController,
         viewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.Factory)
     ) {
+        // Fetch data when HomeScreen is created
+        LaunchedEffect(key1 = Unit){
+            viewModel.fetchDataFromDatabase()
+        }
+
+        val subjectList by viewModel.subjectList
+
         val context = LocalContext.current
         val homeUiState by viewModel.homeUiState.collectAsState()
         val coroutineScope = rememberCoroutineScope()
@@ -111,6 +116,7 @@
                     )
                     Text(
                         text = "I need the tutor for",
+//                        text = subjectList.getOrNull(0)?.subjectName ?: "No Subject Available",
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center
                     )
@@ -129,19 +135,21 @@
                             .padding(10.dp),
                         singleLine = true
                     )
-                    if(homeUiState.itemList.isNotEmpty()){
+                    if(subjectList.isNotEmpty()){
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(3),
                         verticalArrangement = Arrangement.spacedBy(5.dp),
                         horizontalArrangement = Arrangement.spacedBy(5.dp),
                         modifier = Modifier.padding(1.dp)
                     ) {
-                        items(homeUiState.itemList) {
+                        items(subjectList) {
                             CourseCard(
                                 context = context,
                                 featureCourse = it,
                                 onClickAction = {
-                                    navController.navigate(TutorListDestination.route) {
+                                    navController.navigate(
+                                        route = TutorListDestination.route + "/${it.subjectName}",
+                                    ) {
                                         navController.graph.startDestinationRoute?.let { route ->
                                             popUpTo(route) {
                                                 saveState = true
@@ -167,7 +175,9 @@
                         ) {
                             Spacer(modifier = Modifier.padding(30.dp))
                             Text(
-                                text = "NO SUBJECTS",
+                                text = "NO SUBJECTS\n" +
+                                        "          OR\n" +
+                                        "NO INTERNET",
                                 modifier = Modifier.weight(1f),
                                 style = TextStyle(
                                     fontSize = 50.sp,
@@ -223,7 +233,7 @@
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun CourseCard(
-        featureCourse: SubjectDao.SubjectWithAverageRating,
+        featureCourse: SubjectFirebase,
         onClickAction: () -> Unit,
         context: Context
     ) {
@@ -247,7 +257,7 @@
 //                )
                 AsyncImage(
                     model =  ImageRequest.Builder(context = context)
-                        .data(featureCourse.subject.img)
+                        .data(featureCourse.imgLink)
                         .crossfade(true)
                         .build(),
                     error = painterResource(R.drawable._83945387_1317182618979724_2368759731661496754_n_removebg_preview),
@@ -262,7 +272,7 @@
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = featureCourse.subject.name,
+                        text = featureCourse.subjectName ?: "Null",
                         modifier = Modifier
                             .padding(0.dp)
                             .fillMaxWidth()

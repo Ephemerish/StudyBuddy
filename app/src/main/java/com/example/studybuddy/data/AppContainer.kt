@@ -41,7 +41,8 @@ class AppDataContainer(private val context: Context) : AppContainer {
         OfflineStudyBuddyRepository(
             StudyBuddyDatabase.getDatabase(context).userDao(),
             StudyBuddyDatabase.getDatabase(context).subjectDao(),
-            StudyBuddyDatabase.getDatabase(context).reviewsDao()
+            StudyBuddyDatabase.getDatabase(context).reviewsDao(),
+            StudyBuddyDatabase.getDatabase(context).userSubjectsDao()
             // Add other DAOs as needed
         )
     }
