@@ -61,6 +61,7 @@ fun StudyBuddyBodyNavHost(
     googleAuthUiClient: GoogleAuthUiClient,
     firebase: DatabaseReference
 ) {
+
     NavHost(
         navController = navController,
         startDestination = HomeDestination.route,
@@ -101,7 +102,7 @@ fun StudyBuddyBodyNavHost(
             )
         }
         composable(
-            route = TutorListDestination.route + "/{myParam}",
+            route = TutorListDestination.route+"/{myParam}",
             arguments = listOf(
                 navArgument("myParam"){
                     type = NavType.StringType
@@ -109,13 +110,23 @@ fun StudyBuddyBodyNavHost(
             )
         ) {
             val selectedSubject = it.arguments?.getString("myParam")?: ""
-            TutorListScreen(navController = navController, selectedSubject = selectedSubject)
+            TutorListScreen(
+                navController = navController,
+                selectedSubject = selectedSubject,
+                appViewModel = viewModel
+                )
             viewModel.updateCurrentNavDrawer(
                 navDrawerType = NavDrawerType.Home,
             )
         }
-        composable(route = TutorDetailDestination.route) {
-            TutorDetailScreen(navController = navController)
+        composable(
+            route = TutorDetailDestination.route,
+        ) {
+            //val selectedUserSubject = it.arguments?.getString("myParam")?: ""
+            TutorDetailScreen(
+                navController = navController,
+                appViewModel = viewModel
+            )
             viewModel.updateCurrentNavDrawer(
                 navDrawerType = NavDrawerType.Home,
             )

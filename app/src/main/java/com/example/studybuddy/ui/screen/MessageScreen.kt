@@ -13,7 +13,9 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.studybuddy.R
+import com.example.studybuddy.ui.AppViewModelProvider
 import com.example.studybuddy.ui.navigation.NavigationDestination
 
 object RequestDestination : NavigationDestination {
@@ -22,7 +24,9 @@ object RequestDestination : NavigationDestination {
 }
 
 @Composable
-fun MessageScreen() {
+fun MessageScreen(
+    viewModel: MessageViewModel = viewModel(factory = AppViewModelProvider.Factory),
+) {
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,

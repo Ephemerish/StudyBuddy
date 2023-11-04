@@ -26,7 +26,11 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.studybuddy.StudyBuddyApplication
 import com.example.studybuddy.presentation.sign_in.SignInViewModel
 import com.example.studybuddy.ui.screen.HomeViewModel
+import com.example.studybuddy.ui.screen.MessageViewModel
+import com.example.studybuddy.ui.screen.MyClassViewModel
 import com.example.studybuddy.ui.screen.RegistrationViewModel
+import com.example.studybuddy.ui.screen.TutorDetailViewModel
+import com.example.studybuddy.ui.screen.TutorListViewModel
 
 object AppViewModelProvider {
     val Factory = viewModelFactory {
@@ -40,6 +44,18 @@ object AppViewModelProvider {
         }
         initializer {
             SignInViewModel(inventoryApplication().container.studyBuddyRepository)
+        }
+        initializer {
+            TutorListViewModel(inventoryApplication().container.studyBuddyRepository)
+        }
+        initializer {
+            TutorDetailViewModel(inventoryApplication().container.studyBuddyRepository)
+        }
+        initializer {
+            MyClassViewModel(inventoryApplication().container.studyBuddyRepository)
+        }
+        initializer {
+            MessageViewModel(inventoryApplication().container.studyBuddyRepository)
         }
     }
 }

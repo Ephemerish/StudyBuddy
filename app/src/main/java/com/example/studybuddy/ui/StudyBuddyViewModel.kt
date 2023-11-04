@@ -15,18 +15,22 @@
  */
 package com.example.studybuddy.ui.theme
 
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.example.studybuddy.data.NavDrawerType
 import com.example.studybuddy.ui.StudyBuddyUiState
+import com.example.studybuddy.ui.screen.UserSubjectFirebase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 
 class StudyBuddyViewModel : ViewModel() {
+    val currentUserSubject = mutableStateOf<UserSubjectFirebase>(UserSubjectFirebase())
+
+    fun updateCurrentUserSubject(userSubjectFirebase: UserSubjectFirebase) {
+        currentUserSubject.value = userSubjectFirebase
+    }
 
     private val _uiState = MutableStateFlow(StudyBuddyUiState())
     val uiState: StateFlow<StudyBuddyUiState> = _uiState

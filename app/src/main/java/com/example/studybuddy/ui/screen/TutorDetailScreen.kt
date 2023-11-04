@@ -27,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -34,18 +35,26 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.example.studybuddy.R
+import com.example.studybuddy.ui.AppViewModelProvider
 import com.example.studybuddy.ui.navigation.NavigationDestination
+import com.example.studybuddy.ui.theme.StudyBuddyViewModel
 
 object TutorDetailDestination : NavigationDestination {
     override val route = "tutorDetail"
     override val title = "TutorDetail"
 }@Composable
 fun TutorDetailScreen(
-    navController: NavHostController
+    navController: NavHostController,
+    viewModel: TutorDetailViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    appViewModel: StudyBuddyViewModel,
 ) {
+    val userSubject by appViewModel.currentUserSubject
     var deleteConfirmationRequired by rememberSaveable { mutableStateOf(false) }
     Column(
         verticalArrangement = Arrangement.Center,
@@ -55,19 +64,24 @@ fun TutorDetailScreen(
         Row(
             modifier = Modifier.weight(1f)
         ) {
+            val context = LocalContext.current
             Column(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.weight(1f)
             ) {
-                Image(
-                    painter = painterResource(R.drawable.harold),
+                AsyncImage(
+                    model =  ImageRequest.Builder(context = context)
+                        .data(userSubject.userProfilePic)
+                        .crossfade(true)
+                        .build(),
+                    error = painterResource(R.drawable.defaultprofile),
                     contentDescription = "Tutor Pic",
                     contentScale = ContentScale.Fit,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(4.dp)
                 )
-                Text(text = "Peer-to-peer")
-                Text(text = "Expert Tutor")
                 Spacer(modifier = Modifier.padding(10.dp))
             }
             Column(
@@ -78,7 +92,7 @@ fun TutorDetailScreen(
                     .fillMaxHeight()
             ) {
                 Text(
-                    text = "Kenneth Harold Panis",
+                    text = userSubject.userName ?: "NULL",
                     style = TextStyle(
                         fontWeight = FontWeight.Bold,
                         fontSize = 25.sp
@@ -105,12 +119,12 @@ fun TutorDetailScreen(
                 verticalArrangement = Arrangement.SpaceEvenly
             ) {
                 Text(text = "Profile")
-                Text(text = "   7 years experience in programing")
-                Text(text = "Curriculum")
-                Text(text = "   Programming")
-                Text(text = "   C++")
-                Text(text = "   Mobile")
-                Text(text = "   Quantum Computing")
+                Text(text = "  -")
+                Text(text = "  -")
+                Text(text = "  -")
+                Text(text = "Schedule")
+                Text(text = "  -")
+                Text(text = "  -")
             }
         }
         Surface(
@@ -158,7 +172,7 @@ fun TutorDetailScreen(
                 deleteConfirmationRequired = false
             },
             modifier = Modifier.padding(10.dp),
-            tutorName = "Kenneth Harold Panis"
+            tutorName = userSubject?.userName ?: "NULL"
         )
     }
 }
@@ -186,8 +200,12 @@ fun EnrollConfirmationDialog(
         }
     )}
 
-@Preview
-@Composable
-fun TutorDetailScreenPrev() {
-    TutorDetailScreen(navController = rememberNavController())
-}
+//@Preview
+//@Composable
+//fun TutorDetailScreenPrev() {
+//    TutorDetailScreen(
+//        navController = rememberNavController(),
+//        currentUserSubject = UserSubjectFirebase(),
+//        appViewModel = viewModel
+//    )
+//}

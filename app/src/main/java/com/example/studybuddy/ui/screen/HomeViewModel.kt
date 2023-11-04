@@ -75,7 +75,7 @@ class HomeViewModel(private val studyBuddyRepository: StudyBuddyRepository): Vie
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Log.w(TAG, "Failed to read value.", error.toException())
+                Log.w(TAG, "Failed to read subjects value.", error.toException())
             }
         })
     }

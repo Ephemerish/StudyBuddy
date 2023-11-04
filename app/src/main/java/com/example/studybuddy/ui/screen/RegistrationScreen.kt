@@ -35,24 +35,44 @@ import kotlinx.coroutines.launch
 import android.Manifest
 import android.content.Context
 import android.net.Uri
+import android.view.View
+import android.view.inputmethod.InputMethodManager
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.focusModifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -62,6 +82,7 @@ import com.example.studybuddy.presentation.sign_in.GoogleAuthUiClient
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import com.google.firebase.database.DatabaseReference
+import java.util.Locale
 
 object RegistrationDestination : NavigationDestination {
     override val route = "registration"
@@ -76,6 +97,14 @@ fun RegistrationScreen(
     googleAuthUiClient: GoogleAuthUiClient,
     firebase: DatabaseReference
 ) {
+
+    // Fetch data when HomeScreen is created
+    LaunchedEffect(key1 = Unit){
+        viewModel.fetchDataFromDatabase()
+    }
+
+    val subjectList by viewModel.subjectList
+
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
     val permissionState = rememberPermissionState(
@@ -111,7 +140,7 @@ fun RegistrationScreen(
             .fillMaxSize()
             .padding(paddingValues),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Top
     ){
         item{
             Surface {
@@ -121,14 +150,14 @@ fun RegistrationScreen(
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .heightIn(max = 250.dp, min = 250.dp)
+                        .heightIn(max = 100.dp, min = 100.dp)
                 )
-                Column(
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .heightIn(max = 250.dp, min = 250.dp),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally,
+                        .heightIn(max = 100.dp, min = 100.dp),
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
 //                    Image(
 //                        painter = painterResource(R.drawable.ic_launcher_foreground),
@@ -138,18 +167,18 @@ fun RegistrationScreen(
 //                            .fillMaxWidth()
 //                            .heightIn(max = 250.dp, min = 250.dp)
 //                    )
-                    Spacer(modifier = Modifier.height(5.dp))
+                    Spacer(modifier = Modifier.width(10.dp))
                     AsyncImage(
                         model = googleAuthUiClient.getSignedUser()?.profilePictureUrl,
                         error = painterResource(R.drawable._83945387_1317182618979724_2368759731661496754_n_removebg_preview),
                         contentDescription = "Profile Pic",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
-                            .size(150.dp)
+                            .size(80.dp)
                             .clip(CircleShape)
                             .fillMaxWidth(),
                     )
-                    Spacer(modifier = Modifier.height(5.dp))
+                    Spacer(modifier = Modifier.width(5.dp))
                     if(googleAuthUiClient.getSignedUser()?.userName != null)
                     {
                         Text(
@@ -157,11 +186,13 @@ fun RegistrationScreen(
                             textAlign = TextAlign.Center,
                             style = TextStyle(
                                 color = Color.Black,
-                                fontSize = 36.sp,
+                                fontSize = 35.sp,
                                 fontWeight = FontWeight.SemiBold
-                            )
+                            ),
+                            modifier = Modifier
+                                .weight(1f)
                         )
-                        Spacer(modifier = Modifier.height(5.dp))
+                        Spacer(modifier = Modifier.width(10.dp))
                     }
                 }
             }
@@ -174,7 +205,9 @@ fun RegistrationScreen(
                 permissionState = permissionState,
                 filePickerLauncher = filePickerLauncher,
                 context = context,
-                enabled = viewModel.itemUiState.isEntryValid
+                enabled = viewModel.itemUiState.isEntryValid,
+                subjectList = subjectList,
+                viewModel = viewModel
             )
         }
         item {
@@ -194,7 +227,7 @@ fun RegistrationScreen(
 //            }) {
 //                Text(text = "insertSampleData")
 //            }
-            Spacer(modifier = Modifier.height(5.dp))
+            Spacer(modifier = Modifier.height(50.dp))
             Button(onClick = {
                 coroutineScope.launch {
                     viewModel.upsertUserSubject(firebase = firebase)
@@ -225,13 +258,116 @@ fun ItemInputForm(
     enabled: Boolean = true,
     permissionState: PermissionState,
     filePickerLauncher: ManagedActivityResultLauncher<String, Uri?>,
-    context: Context
+    context: Context,
+    subjectList: List<SubjectFirebase>,
+    viewModel: RegistrationViewModel
 ) {
+    val context = LocalContext.current
+    val inputMethodManager = remember { context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager }
+    val view = LocalView.current // Assuming you can access the view here.
+    val focusRequester = FocusRequester()
+
+    var expanded by remember {
+        mutableStateOf(false)
+    }
+
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(5.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Spacer(modifier = Modifier.padding(5.dp))
+        Row(modifier = Modifier.fillMaxWidth()) {
+            OutlinedTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(70.dp)
+                    .focusRequester(focusRequester),
+                value = itemDetails.subjectName,
+                onValueChange = {
+                    onValueChange(itemDetails.copy(subjectName = it))
+                    expanded = true
+                    focusRequester.requestFocus()
+                },
+                label = {
+                    Text("Subject")
+                },
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                ),
+                textStyle = TextStyle(
+                    color = Color.Black,
+                    fontSize = 16.sp
+                ),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Done
+                ),
+                singleLine = true,
+                trailingIcon = {
+                    IconButton(onClick = {
+                        expanded = !expanded
+                        focusRequester.requestFocus()
+                    }) {
+                        Icon(
+                            modifier = Modifier.size(24.dp),
+                            imageVector = Icons.Rounded.KeyboardArrowDown,
+                            contentDescription = "arrow",
+                            tint = Color.Black
+                        )
+                    }
+                }
+            )
+        }
+        AnimatedVisibility(visible = expanded) {
+            Card(
+                modifier = Modifier
+                    .padding(horizontal = 0.dp)
+                    .fillMaxWidth(),
+                elevation = CardDefaults.elevatedCardElevation(15.dp),
+                shape = RoundedCornerShape(10.dp)
+            ) {
+                LazyColumn(
+                    modifier = Modifier.heightIn(max = 150.dp)
+                ) {
+                    val filterText = itemDetails.subjectName?.lowercase(Locale.ROOT) ?: "NULL"
+                    val filteredSubjects = subjectList.filter {
+                        it.subjectName?.lowercase(Locale.ROOT)?.contains(filterText) == true
+                    }
+                    if (filteredSubjects.isNotEmpty()) {
+                        items(filteredSubjects) {
+                            CategoryItems(
+                                title = it.subjectName ?: "null",
+                                view = view,
+                                inputMethodManager = inputMethodManager
+                            ) { title ->
+                                viewModel.updateUiState(
+                                    viewModel.itemUiState.itemDetails.copy(
+                                        subjectName = title,
+                                        img = it.imgLink ?: "NULL"
+                                    )
+                                )
+                                expanded = false
+                            }
+                        }
+                    } else {
+                        expanded = false
+                    }
+                }
+            }
+        }
+        if (!enabled) {
+            Text(
+                text = "*required field",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 5.dp),
+                textAlign = TextAlign.Left,
+                color = Color.Red
+            )
+        }
         Card(onClick = {
             if (permissionState.status.isGranted) {
                 filePickerLauncher.launch("*/*")
@@ -252,63 +388,30 @@ fun ItemInputForm(
                 alignment = Alignment.Center,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .heightIn(max = 250.dp)
+                    .heightIn(max = 200.dp)
             )
         }
-        OutlinedTextField(
-            value = itemDetails.subjectName,
-            onValueChange = {
-                onValueChange(itemDetails.copy(subjectName = it))
-            },
-            label = {
-                Text("Subject")
-            },
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-                unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-                disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-            ),
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true
-        )
-        if (!enabled) {
-            Text(
-                text = "*required field",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 5.dp),
-                textAlign = TextAlign.Left
-            )
-        }
-//        OutlinedTextField(
-//            value = itemDetails.price,
-//            onValueChange = { onValueChange(itemDetails.copy(price = it)) },
-//            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-//            label = { Text("Description") },
-//            colors = OutlinedTextFieldDefaults.colors(
-//                focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-//                unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-//                disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-//            ),
-//            leadingIcon = { Text(Currency.getInstance(Locale.getDefault()).symbol) },
-//            modifier = Modifier.fillMaxWidth(),
-//            enabled = enabled,
-//            singleLine = true
-//        )
-//        OutlinedTextField(
-//            value = itemDetails.quantity,
-//            onValueChange = { onValueChange(itemDetails.copy(quantity = it)) },
-//            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-//            label = { Text("Schedule") },
-//            colors = OutlinedTextFieldDefaults.colors(
-//                focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-//                unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-//                disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-//            ),
-//            modifier = Modifier.fillMaxWidth(),
-//            enabled = enabled,
-//            singleLine = true
-//        )
+    }
+}
+
+
+@Composable
+fun CategoryItems(
+    title: String,
+    view:   View,
+    inputMethodManager: InputMethodManager,
+    onSelect: (String) -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable {
+                onSelect(title)
+                inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
+            }
+            .padding(10.dp)
+    ) {
+        Text(text = title, fontSize = 18.sp)
     }
 }
 
