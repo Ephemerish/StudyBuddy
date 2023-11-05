@@ -32,7 +32,7 @@ import com.example.studybuddy.ui.screen.ContactUsScreen
 import com.example.studybuddy.ui.screen.HomeDestination
 import com.example.studybuddy.ui.screen.HomeScreen
 import com.example.studybuddy.ui.screen.RequestDestination
-import com.example.studybuddy.ui.screen.MessageScreen
+import com.example.studybuddy.ui.screen.RequestScreen
 import com.example.studybuddy.ui.screen.MyClassDestination
 import com.example.studybuddy.ui.screen.MyClassScreen
 import com.example.studybuddy.ui.screen.RegistrationDestination
@@ -74,7 +74,7 @@ fun StudyBuddyBodyNavHost(
             )
         }
         composable(route = RequestDestination.route) {
-            MessageScreen()
+            RequestScreen()
             viewModel.updateCurrentNavDrawer(
                 navDrawerType = NavDrawerType.Request,
             )

@@ -17,16 +17,14 @@
 package com.example.studybuddy.ui
 
 
-import android.app.Application
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory
-import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.studybuddy.StudyBuddyApplication
 import com.example.studybuddy.presentation.sign_in.SignInViewModel
 import com.example.studybuddy.ui.screen.HomeViewModel
-import com.example.studybuddy.ui.screen.MessageViewModel
+import com.example.studybuddy.ui.screen.RequestViewModel
 import com.example.studybuddy.ui.screen.MyClassViewModel
 import com.example.studybuddy.ui.screen.RegistrationViewModel
 import com.example.studybuddy.ui.screen.TutorDetailViewModel
@@ -55,7 +53,7 @@ object AppViewModelProvider {
             MyClassViewModel(inventoryApplication().container.studyBuddyRepository)
         }
         initializer {
-            MessageViewModel(inventoryApplication().container.studyBuddyRepository)
+            RequestViewModel(inventoryApplication().container.studyBuddyRepository)
         }
     }
 }

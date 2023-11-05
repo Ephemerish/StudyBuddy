@@ -230,7 +230,7 @@ fun RegistrationScreen(
             Spacer(modifier = Modifier.height(50.dp))
             Button(onClick = {
                 coroutineScope.launch {
-                    viewModel.upsertUserSubject(firebase = firebase)
+                    viewModel.upsertUserSubject()
                     navController.navigateUp()
                 }
             },

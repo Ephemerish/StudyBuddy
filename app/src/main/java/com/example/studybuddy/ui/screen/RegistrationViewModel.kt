@@ -19,6 +19,7 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.database
 import com.google.firebase.storage.storage
 import kotlinx.coroutines.flow.firstOrNull
+import java.util.Locale
 
 class RegistrationViewModel(
     private val studyBuddyRepository: StudyBuddyRepository
@@ -92,12 +93,14 @@ class RegistrationViewModel(
         studyBuddyRepository.clearAllSubjects()
     }
 
-    suspend fun upsertUserSubject(firebase: DatabaseReference) {
-        val subjectName = itemUiState.itemDetails.subjectName
+    suspend fun upsertUserSubject( ) {
+        val subjectNameNotTitleCase = itemUiState.itemDetails.subjectName
+        val subjectName = subjectNameNotTitleCase.split(" ")
+            .joinToString(" ") { it.toLowerCase(Locale.ROOT).capitalize(Locale.ROOT) }
         val user = getUser()
         val subjectFlow = studyBuddyRepository.getSubjectWithName(subjectName)
 
-        val insertedSubject = subjectFlow.firstOrNull() // Use firstOrNull to get a single result
+        val insertedSubject = subjectFlow.firstOrNull()
 
         if (insertedSubject == null) {
             // Subject doesn't exist, so create it

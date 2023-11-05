@@ -1,5 +1,6 @@
 package com.example.studybuddy.ui.screen
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,6 +22,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -32,30 +34,38 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.studybuddy.R
 import com.example.studybuddy.ui.AppViewModelProvider
 import com.example.studybuddy.ui.navigation.NavigationDestination
 import com.example.studybuddy.ui.theme.StudyBuddyViewModel
+import kotlinx.coroutines.launch
 
 object TutorDetailDestination : NavigationDestination {
     override val route = "tutorDetail"
     override val title = "TutorDetail"
-}@Composable
+}
+
+@SuppressLint("CoroutineCreationDuringComposition", "UnrememberedMutableState")
+@Composable
 fun TutorDetailScreen(
     navController: NavHostController,
     viewModel: TutorDetailViewModel = viewModel(factory = AppViewModelProvider.Factory),
     appViewModel: StudyBuddyViewModel,
 ) {
+    val coroutineScope = rememberCoroutineScope()
     val userSubject by appViewModel.currentUserSubject
-    var deleteConfirmationRequired by rememberSaveable { mutableStateOf(false) }
+    var UploadConfirmationRequired by rememberSaveable { mutableStateOf(false) }
+    var currentUser by viewModel.currentUser
+    val context = LocalContext.current
+    coroutineScope.launch {
+        currentUser = viewModel.getCurrentUser()?.userId ?: "NULL"
+    }
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -100,7 +110,7 @@ fun TutorDetailScreen(
                     textAlign = TextAlign.Center
                 )
                 Button(
-                    onClick = { deleteConfirmationRequired = true },
+                    onClick = { UploadConfirmationRequired = true },
                     colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary)
                 ) {
                     Text(
@@ -151,54 +161,75 @@ fun TutorDetailScreen(
             }
         }
     }
-    if (deleteConfirmationRequired) {
-        EnrollConfirmationDialog(
-            onDeleteConfirm = {
-                deleteConfirmationRequired = false
-                navController.navigate(RequestDestination.route) {
-                    navController.graph.startDestinationRoute?.let { route ->
-                        popUpTo(route) {
-                            saveState = true
-                        }
+    if (UploadConfirmationRequired) {
+        if(currentUser != (userSubject.userId ?: "null")) {
+            EnrollConfirmationDialog(
+                onConfirm = {
+                    UploadConfirmationRequired = false
+                    coroutineScope.launch {
+                        viewModel.upsertUserRequest(
+                            receiverUserSubject = userSubject
+                        )
                     }
-                    // Avoid multiple copies of the same destination when
-                    // reselecting the same item
-                    launchSingleTop = true
-                    // Restore state when reselecting a previously selected item
-                    restoreState = true
+                    navController.navigate(
+                        route = HomeDestination.route,
+                        builder = {
+                            popUpTo(HomeDestination.route) {
+                                // This will pop all destinations up to the specified route (including itself).
+                                inclusive = true
+                            }
+                        }
+                    )
+                },
+                onCancel = {
+                    UploadConfirmationRequired = false
+                },
+                modifier = Modifier.padding(10.dp),
+                tutorName = userSubject?.userName ?: "NULL",
+                subject = userSubject.subjectName
+            )
+        } else {
+            AlertDialog(onDismissRequest = { /* Do nothing */ },
+                title = { Text("Hey...") },
+                text = { Text("You cannot request to your self, silly!") },
+                modifier = Modifier.padding(10.dp),
+                confirmButton = {
+                    TextButton(onClick = {
+                            UploadConfirmationRequired = false
+                    }) {
+                        Text(text = "Back")
+                    }
                 }
-            },
-            onDeleteCancel = {
-                deleteConfirmationRequired = false
-            },
-            modifier = Modifier.padding(10.dp),
-            tutorName = userSubject?.userName ?: "NULL"
-        )
+            )
+        }
     }
 }
 
 @Composable
 fun EnrollConfirmationDialog(
-    onDeleteConfirm: () -> Unit,
-    onDeleteCancel: () -> Unit,
+    onConfirm: () -> Unit,
+    onCancel: () -> Unit,
     modifier: Modifier = Modifier,
-    tutorName: String
+    tutorName: String,
+    subject: String?,
 ) {
     AlertDialog(onDismissRequest = { /* Do nothing */ },
         title = { Text("Attention") },
-        text = { Text("Are You sure You want to Enroll to $tutorName") },
+        text = { Text("Are you sure you want to send a request to ${tutorName}'s ${subject} " +
+                "class?")},
         modifier = modifier,
         dismissButton = {
-            TextButton(onClick = onDeleteCancel) {
+            TextButton(onClick = onCancel) {
                 Text(text = "no")
             }
         },
         confirmButton = {
-            TextButton(onClick = onDeleteConfirm) {
+            TextButton(onClick = onConfirm) {
                 Text(text = "yes")
             }
         }
-    )}
+    )
+}
 
 //@Preview
 //@Composable

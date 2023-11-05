@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.firstOrNull
 class MyClassViewModel(
     private val studyBuddyRepository: StudyBuddyRepository
 ):ViewModel(){
+    val subjectNameToDelete = mutableStateOf("")
     val userSubjectList = mutableStateOf<List<UserSubjectFirebase>>(emptyList())
     val subjectList = mutableStateOf<List<SubjectFirebase>>(emptyList())
     // Add a function to fetch data

@@ -16,7 +16,6 @@
 
 package com.example.studybuddy.ui.screen
 
-import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -29,7 +28,6 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.database
-import com.google.firebase.database.getValue
 import com.google.firebase.storage.storage
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -40,11 +38,16 @@ import kotlinx.coroutines.flow.stateIn
  * ViewModel to retrieve all items in the Room database.
  */
 class HomeViewModel(private val studyBuddyRepository: StudyBuddyRepository): ViewModel() {
+    val homeSearchBarState = mutableStateOf(HomeSearchBarState())
     val subjectList = mutableStateOf<List<SubjectFirebase>>(emptyList())
 
+    //    fun updateUiState(newValue: String) {
+//        homeSearchBarState = HomeSearchBarState(newValue)
+//    }
     // Add a function to fetch data
     fun fetchDataFromDatabase() {
-        val database = Firebase.database("https://study-buddy-79089-default-rtdb.asia-southeast1.firebasedatabase.app/")
+        val database =
+            Firebase.database("https://study-buddy-79089-default-rtdb.asia-southeast1.firebasedatabase.app/")
         val myRef = database.getReference("StudyBuddy/subjects")
         val storage = Firebase.storage("gs://study-buddy-79089.appspot.com/")
         val storageRef = storage.getReference("StudyBuddy")
@@ -56,8 +59,8 @@ class HomeViewModel(private val studyBuddyRepository: StudyBuddyRepository): Vie
                     val subject = subjectData.getValue(SubjectFirebase::class.java)
                     subject?.let {
                         subjects.add(it)
-                        val subjectImgReference = storageRef.child(
-                            "subjects/${it.subjectName}/image.jpg")
+                        val subjectImgReference =
+                            storageRef.child("subjects/${it.subjectName}/image.jpg")
                         subjectImgReference.downloadUrl
                             .addOnSuccessListener { uri ->
                                 val downloadUrl = uri.toString()
@@ -71,6 +74,7 @@ class HomeViewModel(private val studyBuddyRepository: StudyBuddyRepository): Vie
                             }
                     }
                 }
+                // Update subjectList.value when new data is available
                 subjectList.value = subjects
             }
 
@@ -114,4 +118,8 @@ data class SubjectUiState(val itemList: List<SubjectDao.SubjectWithAverageRating
 data class SubjectFirebase(
     val subjectName: String? = null,
     val imgLink: String? = null
+)
+
+data class HomeSearchBarState(
+    val subjectFilter: String = ""
 )

@@ -2,12 +2,15 @@ package com.example.studybuddy
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Menu
@@ -32,14 +35,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
 import com.example.studybuddy.data.navigationItemContentList
 import com.example.studybuddy.data.sideNavigationItemContentList
 import com.example.studybuddy.presentation.sign_in.GoogleAuthUiClient
 import com.example.studybuddy.presentation.sign_in.ProfileDestination
+import com.example.studybuddy.presentation.sign_in.UserData
 import com.example.studybuddy.ui.StudyBuddyUiState
 import com.example.studybuddy.ui.navigation.NavigationDestination
 import com.example.studybuddy.ui.navigation.StudyBuddyBodyNavHost
@@ -61,7 +71,8 @@ fun StudyBuddyScreen(
     loginNavController: NavHostController,
     googleAuthUiClient: GoogleAuthUiClient,
     onSignOut: () -> Job,
-    firebase: DatabaseReference
+    firebase: DatabaseReference,
+    userData: UserData?
 ) {
     val viewModel: StudyBuddyViewModel = viewModel()
     val navDrawerUiState = viewModel.uiState.collectAsState().value
@@ -84,6 +95,7 @@ fun StudyBuddyScreen(
         Scaffold(
             topBar = {
                 StudyBuddyTopBar(
+                    userData =userData,
                     viewModel = viewModel,
                     navDrawerUiState = navDrawerUiState,
                     loginNavController = loginNavController,
@@ -110,8 +122,11 @@ fun StudyBuddyScreen(
                 ) {
                     Text(
                         text = navDrawerUiState.currentNavDrawer.name,
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.padding(start = 10.dp)
+                        style = TextStyle(
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold
+                        ),
+                        modifier = Modifier.padding(start = 15.dp)
                     )
                 }
                 Surface(
@@ -142,7 +157,8 @@ fun StudyBuddyTopBar(
     navDrawerUiState: StudyBuddyUiState,
     drawerState: DrawerState,
     scope: CoroutineScope,
-    loginNavController: NavHostController
+    loginNavController: NavHostController,
+    userData: UserData?
 ) {
     CenterAlignedTopAppBar(
         title = {
@@ -173,11 +189,22 @@ fun StudyBuddyTopBar(
                 loginNavController.navigate(ProfileDestination.route)
             },
             ) {
-                Icon(
-                    imageVector = Icons.Default.AccountBox,
-                    contentDescription = "Profile",
-                    modifier = Modifier.size(30.dp)
-                )
+                if(userData?.profilePictureUrl != null) {
+                    AsyncImage(
+                        model = userData.profilePictureUrl,
+                        contentDescription = "Profile Img",
+                        modifier = Modifier
+                            .size(50.dp)
+                            .clip(CircleShape),
+                        contentScale = ContentScale.Crop,
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Default.AccountBox,
+                        contentDescription = "Profile Img",
+                        modifier = Modifier.size(50.dp)
+                    )
+                }
             }
         }
     )

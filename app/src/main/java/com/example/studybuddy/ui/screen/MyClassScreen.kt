@@ -12,16 +12,19 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,6 +44,7 @@ import coil.request.ImageRequest
 import com.example.studybuddy.R
 import com.example.studybuddy.ui.AppViewModelProvider
 import com.example.studybuddy.ui.navigation.NavigationDestination
+import kotlinx.coroutines.launch
 
 object MyClassDestination : NavigationDestination {
     override val route = "myClass"
@@ -51,12 +55,13 @@ object MyClassDestination : NavigationDestination {
 fun MyClassScreen(
     viewModel: MyClassViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
-
+    var deleteConfirmationRequired by rememberSaveable { mutableStateOf(false) }
     val userSubject by viewModel.userSubjectList
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val subjectList by viewModel.subjectList
     val userSubjectList by viewModel.userSubjectList
+    var subjectNameToDelete by viewModel.subjectNameToDelete
     var currentUser by remember {
         mutableStateOf("")
     }
@@ -80,11 +85,13 @@ fun MyClassScreen(
 //                Text(text = it.subjectName ?: "NULL")
                 MyClassCard(
                     onClick = {
-                        viewModel.deleteUserSubjectFromDatabase(
-                            subjectName = it.subjectName,
-                            currentUser = currentUser,
-                            context = context
-                        )
+                        deleteConfirmationRequired = true
+                        subjectNameToDelete = it.subjectName.toString()
+//                        viewModel.deleteUserSubjectFromDatabase(
+//                            subjectName = it.subjectName,
+//                            currentUser = currentUser,
+//                            context = context
+//                        )
                     },
                     subjectList = subjectList,
                     userSubject = it,
@@ -92,7 +99,34 @@ fun MyClassScreen(
                 )
             }
         }
-    } else {
+        if (deleteConfirmationRequired) {
+            AlertDialog(onDismissRequest = { /* Do nothing */ },
+                title = { Text("Attention") },
+                text = { Text("Are you sure you want to delete your posting in " +
+                        "in ${subjectNameToDelete}?")},
+                modifier =  Modifier.padding(10.dp),
+                dismissButton = {
+                    TextButton(onClick = {
+                        deleteConfirmationRequired = false
+                    }) {
+                        Text(text = "no")
+                    }
+                },
+                confirmButton = {
+                    TextButton(onClick = {
+                        viewModel.deleteUserSubjectFromDatabase(
+                            subjectName = subjectNameToDelete,
+                            currentUser = currentUser,
+                            context = context
+                        )
+                        deleteConfirmationRequired = false
+                    }) {
+                        Text(text = "yes")
+                    }
+                }
+            )
+        }
+        } else {
         Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,

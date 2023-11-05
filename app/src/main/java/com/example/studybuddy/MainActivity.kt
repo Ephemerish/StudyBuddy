@@ -131,6 +131,7 @@ fun StudyBuddyApp(
         }
         composable(StudyBuddyDestination.route){
             StudyBuddyScreen(
+                userData = googleAuthUiClient.getSignedUser(),
                 firebase = firebase,
                 loginNavController = loginNavController,
                 googleAuthUiClient = googleAuthUiClient,
