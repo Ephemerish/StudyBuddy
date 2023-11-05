@@ -34,18 +34,21 @@
     import androidx.compose.foundation.lazy.grid.GridCells
     import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
     import androidx.compose.foundation.lazy.grid.items
+    import androidx.compose.foundation.text.KeyboardOptions
     import androidx.compose.material3.Button
     import androidx.compose.material3.Card
     import androidx.compose.material3.ExperimentalMaterial3Api
     import androidx.compose.material3.MaterialTheme
-    import androidx.compose.material3.OutlinedTextField
     import androidx.compose.material3.Surface
     import androidx.compose.material3.Text
+    import androidx.compose.material3.TextField
+    import androidx.compose.material3.TextFieldDefaults
     import androidx.compose.runtime.Composable
     import androidx.compose.runtime.LaunchedEffect
     import androidx.compose.runtime.collectAsState
     import androidx.compose.runtime.getValue
     import androidx.compose.runtime.rememberCoroutineScope
+    import androidx.compose.runtime.setValue
     import androidx.compose.ui.Alignment
     import androidx.compose.ui.Modifier
     import androidx.compose.ui.layout.ContentScale
@@ -53,6 +56,8 @@
     import androidx.compose.ui.res.painterResource
     import androidx.compose.ui.text.TextStyle
     import androidx.compose.ui.text.font.FontWeight
+    import androidx.compose.ui.text.input.ImeAction
+    import androidx.compose.ui.text.input.KeyboardType
     import androidx.compose.ui.text.style.TextAlign
     import androidx.compose.ui.text.style.TextOverflow
     import androidx.compose.ui.tooling.preview.Preview
@@ -81,12 +86,13 @@
         navController: NavHostController,
         viewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.Factory)
     ) {
+        var homeSearchBarState by viewModel.homeSearchBarState
         // Fetch data when HomeScreen is created
-        LaunchedEffect(key1 = Unit){
-            viewModel.fetchDataFromDatabase()
-        }
 
         val subjectList by viewModel.subjectList
+
+        viewModel.fetchDataFromDatabase()
+
 
         val context = LocalContext.current
         val homeUiState by viewModel.homeUiState.collectAsState()
@@ -120,10 +126,10 @@
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center
                     )
-                    OutlinedTextField(
-                        value = "",
+                    TextField(
+                        value = homeSearchBarState.subjectFilter,
                         onValueChange = {
-    //                        viewModel.updateUiState(viewModel._homeUiState.copy(searchCourseText = it))
+                            homeSearchBarState = HomeSearchBarState(it)
                         },
                         label = {
                             Text(
@@ -133,38 +139,57 @@
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(10.dp),
-                        singleLine = true
+                        singleLine = true,
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                            unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        ),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Text,
+                            imeAction = ImeAction.Done
+                        ),
+//                        textStyle = TextStyle(
+//                            color = Color.Black,
+//                            fontSize = 16.sp
+//                        ),
                     )
                     if(subjectList.isNotEmpty()){
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(3),
-                        verticalArrangement = Arrangement.spacedBy(5.dp),
-                        horizontalArrangement = Arrangement.spacedBy(5.dp),
-                        modifier = Modifier.padding(1.dp)
-                    ) {
-                        items(subjectList) {
-                            CourseCard(
-                                context = context,
-                                featureCourse = it,
-                                onClickAction = {
-                                    navController.navigate(
-                                        route = TutorListDestination.route + "/${it.subjectName}",
-                                    ) {
-                                        navController.graph.startDestinationRoute?.let { route ->
-                                            popUpTo(route) {
-                                                saveState = true
+                        LazyVerticalGrid(
+                            columns = GridCells.Fixed(3),
+                            verticalArrangement = Arrangement.spacedBy(5.dp),
+                            horizontalArrangement = Arrangement.spacedBy(5.dp),
+                            modifier = Modifier.padding(1.dp)
+                        ) {
+                            val filteredSubjects = subjectList.filter { subject ->
+                                subject.subjectName?.contains(homeSearchBarState.subjectFilter,
+                                    ignoreCase = true) ?: false
+                            }
+
+                            val limitedSubjects = filteredSubjects.take(9)
+
+                            items(limitedSubjects) { subject ->
+                                CourseCard(
+                                    context = context,
+                                    featureCourse = subject,
+                                    onClickAction = {
+                                        navController.navigate(
+                                            route = TutorListDestination.route + "/${subject.subjectName}",
+                                        ) {
+                                            navController.graph.startDestinationRoute?.let { route ->
+                                                popUpTo(route) {
+                                                    saveState = true
+                                                }
                                             }
+                                            // Avoid multiple copies of the same destination when
+                                            // reselecting the same item
+                                            launchSingleTop = true
+                                            // Restore state when reselecting a previously selected item
+                                            restoreState = true
                                         }
-                                        // Avoid multiple copies of the same destination when
-                                        // reselecting the same item
-                                        launchSingleTop = true
-                                        // Restore state when reselecting a previously selected item
-                                        restoreState = true
                                     }
-                                }
-                            )
+                                )
+                            }
                         }
-                    }
                     } else {
                         Column(
                             verticalArrangement = Arrangement.Center,
