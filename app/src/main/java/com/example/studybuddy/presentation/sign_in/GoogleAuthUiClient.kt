@@ -55,20 +55,32 @@ class GoogleAuthUiClient (
         val credential = onTapClient.getSignInCredentialFromIntent(intent)
         val googleIdToken = credential.googleIdToken
         val googleCredentials = GoogleAuthProvider.getCredential(googleIdToken, null)
-        return  try {
+
+        return try {
             val user = auth.signInWithCredential(googleCredentials).await().user
-            SignInResult(
-                data = user?.run {
-                    UserData(
-                        userId = uid,
-                        userEmail = email,
-                        userName = displayName,
-                        profilePictureUrl = photoUrl?.toString()
-                    )
-                },
-                errorMessage = null
-            )
-        } catch (e: Exception){
+
+            // Check if the user's email matches the school domain
+            if (user?.email?.endsWith("@bisu.edu.ph") == true) {
+                SignInResult(
+                    data = user.run {
+                        UserData(
+                            userId = uid,
+                            userEmail = email,
+                            userName = displayName,
+                            profilePictureUrl = photoUrl?.toString()
+                        )
+                    },
+                    errorMessage = null
+                )
+            } else {
+                // If the email doesn't match, sign the user out and provide an error message
+                signout()
+                SignInResult(
+                    data = null,
+                    errorMessage = "Invalid email domain. Please use a bisu email."
+                )
+            }
+        } catch (e: Exception) {
             e.printStackTrace()
             if (e is CancellationException) throw e
             SignInResult(
@@ -77,6 +89,7 @@ class GoogleAuthUiClient (
             )
         }
     }
+
     private fun builtSignInRequest(): BeginSignInRequest{
         return  BeginSignInRequest.Builder()
             .setGoogleIdTokenRequestOptions(
