@@ -77,7 +77,7 @@ class GoogleAuthUiClient (
                 signout()
                 SignInResult(
                     data = null,
-                    errorMessage = "Invalid email domain. Please use a bisu email."
+                    errorMessage = "Invalid email domain. Please use BISU email."
                 )
             }
         } catch (e: Exception) {

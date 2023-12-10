@@ -27,6 +27,8 @@ import androidx.navigation.navArgument
 import com.example.studybuddy.data.NavDrawerType
 import com.example.studybuddy.presentation.sign_in.GoogleAuthUiClient
 import com.example.studybuddy.ui.StudyBuddyUiState
+import com.example.studybuddy.ui.screen.AboutUsDestination
+import com.example.studybuddy.ui.screen.AboutUsScreen
 import com.example.studybuddy.ui.screen.ContactUsDestination
 import com.example.studybuddy.ui.screen.ContactUsScreen
 import com.example.studybuddy.ui.screen.HomeDestination
@@ -89,6 +91,12 @@ fun StudyBuddyBodyNavHost(
             ContactUsScreen()
             viewModel.updateCurrentNavDrawer(
                 navDrawerType = NavDrawerType.ContactUs,
+            )
+        }
+        composable(route = AboutUsDestination.route) {
+            AboutUsScreen()
+            viewModel.updateCurrentNavDrawer(
+                navDrawerType = NavDrawerType.AboutUs,
             )
         }
         composable(route = RegistrationDestination.route) {

@@ -41,20 +41,16 @@ object AboutUsDestination : NavigationDestination {
 }
 @Composable
 fun AboutUsScreen(
-    paddingValues: PaddingValues = PaddingValues(),
-    navController: NavHostController,
-    selectedSubject: String
 ) {
     LazyColumn(
-        modifier = Modifier.padding(paddingValues)
+        modifier = Modifier.padding()
     )
     {
         item {
             AboutUsCard(
                 onClickAction = {
-                    navController.navigate(TutorDetailDestination.route)
                 },
-                tutorName = "Kenneth  Harold Panis $selectedSubject",
+                tutorName = "Kenneth  Harold Panis",
                 tutorDescription = "Description:\n" +
                         "Embark on a coding journey with our programming guru. Learn Python, Java, C++, and more. Perfect for beginners or those looking to enhance their skills.",
                 tutorTime = "Schedule:\n" +
@@ -70,7 +66,7 @@ fun AboutUsScreen(
         item {
             AboutUsCard(
                 onClickAction = {
-                    navController.navigate(TutorDetailDestination.route)
+
                 },
                 tutorName = "Virgilyn Tamayo",
                 tutorDescription = "Description:\n" +
@@ -88,7 +84,7 @@ fun AboutUsScreen(
         item {
             AboutUsCard(
                 onClickAction = {
-                    navController.navigate(TutorDetailDestination.route)
+
                 },
                 tutorName = "Crisha Mae Acasio",
                 tutorDescription = "Description:\n" +
@@ -106,7 +102,7 @@ fun AboutUsScreen(
         item {
             AboutUsCard(
                 onClickAction = {
-                    navController.navigate(TutorDetailDestination.route)
+
                 },
                 tutorName = "Maria Jeziel Quimpan",
                 tutorDescription = "Description:\n" +
@@ -124,7 +120,7 @@ fun AboutUsScreen(
         item {
             AboutUsCard(
                 onClickAction = {
-                    navController.navigate(TutorDetailDestination.route)
+
                 },
                 tutorName = "Jhon Reyl Arcayena",
                 tutorDescription = "Description:\n" +
@@ -242,5 +238,5 @@ fun AboutUsCard(
 @Preview
 @Composable
 fun AboutUsScreenPrev() {
-    AboutUsScreen(navController = rememberNavController(), selectedSubject = "test")
+    AboutUsScreen()
 }
