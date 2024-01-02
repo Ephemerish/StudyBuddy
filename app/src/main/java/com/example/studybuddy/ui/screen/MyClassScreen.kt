@@ -1,4 +1,4 @@
-package com.example.studybuddy.ui.screen
+import com.example.studybuddy.ui.screen.MyClassViewModel
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -44,7 +44,8 @@ import coil.request.ImageRequest
 import com.example.studybuddy.R
 import com.example.studybuddy.ui.AppViewModelProvider
 import com.example.studybuddy.ui.navigation.NavigationDestination
-import kotlinx.coroutines.launch
+import com.example.studybuddy.ui.screen.SubjectFirebase
+import com.example.studybuddy.ui.screen.UserSubjectFirebase
 
 object MyClassDestination : NavigationDestination {
     override val route = "myClass"
@@ -133,7 +134,7 @@ fun MyClassScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
-                painter = painterResource(R.drawable._83945387_1317182618979724_2368759731661496754_n_removebg_preview),
+                painter = painterResource(R.drawable.sb_logo_with_title),
                 contentDescription = ""
             )
             Text(
@@ -187,7 +188,7 @@ fun MyClassCard(
                     .data(subjectImgUrl)
                     .crossfade(true)
                     .build(),
-                error = painterResource(R.drawable._83945387_1317182618979724_2368759731661496754_n_removebg_preview),
+                error = painterResource(R.drawable.sb_logo_with_title),
                 contentDescription = "Course Photo",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier

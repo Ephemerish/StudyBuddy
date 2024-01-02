@@ -2,10 +2,12 @@ package com.example.studybuddy.ui.screen
 
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,13 +15,19 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,7 +36,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -36,10 +45,13 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.studybuddy.R
+import com.example.studybuddy.makeNotification
+import com.example.studybuddy.presentation.sign_in.UserProfileFirebase
 import com.example.studybuddy.ui.AppViewModelProvider
 import com.example.studybuddy.ui.navigation.NavigationDestination
 import com.example.studybuddy.ui.theme.Shapes
 import com.example.studybuddy.ui.theme.StudyBuddyViewModel
+import kotlinx.coroutines.launch
 
 object TutorListDestination : NavigationDestination {
     override val route = "tutorList"
@@ -57,27 +69,53 @@ fun TutorListScreen(
     val context = LocalContext.current
     // Fetch data when HomeScreen is created
     LaunchedEffect(key1 = Unit){
-        viewModel.fetchDataFromDatabase(selectedSubject)
+        viewModel.fetchSubjectDataFromDatabase(selectedSubject)
+        viewModel.fetchProfileDataFromDatabase()
     }
     val subjectList by viewModel.UserSubjectList
+    val profileList by viewModel.userProfileList
+
+    val coroutineScope = rememberCoroutineScope()
+
     if(subjectList.isNotEmpty()){
     LazyColumn(
         modifier = Modifier.padding(paddingValues)
     )
     {
+        item {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Spacer(modifier = Modifier.padding(3.dp))
+                Text(
+                    text = selectedSubject,
+                    style = TextStyle(
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    ),
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.padding(3.dp))
+            }
+        }
         items(subjectList){
             TutorCard(
                 onClickAction = {
                     appViewModel.updateCurrentUserSubject(it)
                     navController.navigate(
-                        route = TutorDetailDestination.route
+                        route = TutorDetailDestination.route + "/${selectedSubject}"
                     )
                 },
+                tutorID = it.userId ?: "NULL",
                 tutorName = it.userName ?: "NULL",
                 tutorDescription = "Profile:\n   -\n   -\n   \n",
                 tutorTime = "Schedule:\n   -\n   -\n",
                 tutorImage = it.userProfilePic,
-                context = context
+                context = context,
+                profileList = profileList
                 )
             Divider(thickness = 1.dp, color = Color.Gray)
         }
@@ -102,6 +140,27 @@ fun TutorListScreen(
             )
         }
     }
+
+    Box(
+        modifier = Modifier.fillMaxSize(),
+    ) {
+        ExtendedFloatingActionButton(
+            onClick = {
+                coroutineScope.launch {
+                    viewModel.beTutorToSubject(
+                        selectedSubject = selectedSubject,
+                        profileList = profileList
+                    )
+                }
+            },
+            icon = { Icon(Icons.Filled.AddCircle, "Extended floating action button.") },
+            text = { Text(text = "Be a tutor") },
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(10.dp)
+        )
+    }
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -112,8 +171,17 @@ fun TutorCard(
     tutorDescription: String,
     tutorTime: String,
     tutorImage: String?,
-    context: Context
+    context: Context,
+    profileList: List<UserProfileFirebase>,
+    tutorID: String
 ) {
+    var tutorProfile: UserProfileFirebase = UserProfileFirebase()
+    profileList.forEach { profile ->
+        if(profile.userId == tutorID){
+            tutorProfile = profile
+        }
+    }
+
     Card(
         onClick = onClickAction,
         modifier = Modifier
@@ -156,15 +224,34 @@ fun TutorCard(
                 )
                 Column(
                     verticalArrangement = Arrangement.Top,
-                    modifier = Modifier.weight(6f)
+                    modifier = Modifier
+                        .weight(6f)
+                        .absolutePadding(left = 5.dp, right = 10.dp)
                 ) {
+                    Box(
+                        modifier = Modifier
+                            .weight(3.2f)
+                            .fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = tutorProfile.userBio ?: "Null",
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp), // Adjust padding as needed
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 5,
+                        )
+                    }
                     Text(
-                        text = tutorDescription,
-                        modifier = Modifier.weight(1f)
-                    )
-                    Text(
-                        text = tutorTime,
-                        modifier = Modifier.weight(1f)
+                        text = "${tutorProfile.userCourse ?: "Null"} " +
+                                "Year ${tutorProfile.userYearLevel ?: "Null"}",
+                        modifier = Modifier.weight(1f),
+                        style = TextStyle(
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
                     )
                 }
             }
@@ -178,15 +265,16 @@ fun TutorCard(
 //    TutorCard({}, "",)
 //}
 
-@Preview
-@Composable
-fun TutorListScreenPrev() {
-    TutorCard(
-        onClickAction = { /*TODO*/ },
-        tutorName = "test",
-        tutorDescription = "deccription",
-        tutorTime = "time",
-        tutorImage = "null",
-        context = LocalContext.current
-    )
-}
+//@Preview
+//@Composable
+//fun TutorListScreenPrev() {
+//    TutorCard(
+//        onClickAction = { /*TODO*/ },
+//        tutorName = "test",
+//        tutorDescription = "deccription",
+//        tutorTime = "time",
+//        tutorImage = "null",
+//        context = LocalContext.current,
+//        profileList = profileList
+//    )
+//}

@@ -3,9 +3,11 @@ package com.example.studybuddy.ui.screen
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.heightIn
@@ -20,6 +22,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -34,6 +37,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -57,7 +61,10 @@ fun TutorDetailScreen(
     navController: NavHostController,
     viewModel: TutorDetailViewModel = viewModel(factory = AppViewModelProvider.Factory),
     appViewModel: StudyBuddyViewModel,
+    selectedSubject: String,
 ) {
+    val profileList by viewModel.userProfileList
+
     val coroutineScope = rememberCoroutineScope()
     val userSubject by appViewModel.currentUserSubject
     var UploadConfirmationRequired by rememberSaveable { mutableStateOf(false) }
@@ -66,11 +73,25 @@ fun TutorDetailScreen(
     coroutineScope.launch {
         currentUser = viewModel.getCurrentUser()?.userId ?: "NULL"
     }
+    LaunchedEffect(key1 = Unit){
+        viewModel.fetchProfileDataFromDatabase(userSubject.userId ?: "NULL")
+    }
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxSize()
     ) {
+        Spacer(modifier = Modifier.padding(3.dp))
+        Text(
+            text = selectedSubject,
+            style = TextStyle(
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            ),
+            textAlign = TextAlign.Center
+        )
+        Spacer(modifier = Modifier.padding(3.dp))
         Row(
             modifier = Modifier.weight(1f)
         ) {
@@ -92,7 +113,7 @@ fun TutorDetailScreen(
                         .weight(1f)
                         .padding(4.dp)
                 )
-                Spacer(modifier = Modifier.padding(10.dp))
+//                Spacer(modifier = Modifier.padding(10.dp))
             }
             Column(
                 verticalArrangement = Arrangement.Center,
@@ -100,6 +121,7 @@ fun TutorDetailScreen(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxHeight()
+                    .absolutePadding(left = 0.dp, right = 20.dp)
             ) {
                 Text(
                     text = userSubject.userName ?: "NULL",
@@ -126,20 +148,53 @@ fun TutorDetailScreen(
                 .fillMaxSize()
         ) {
             Column(
-                verticalArrangement = Arrangement.SpaceEvenly
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .padding(10.dp)
             ) {
-                Text(text = "Profile")
-                Text(text = "  -")
-                Text(text = "  -")
-                Text(text = "  -")
-                Text(text = "Schedule")
-                Text(text = "  -")
-                Text(text = "  -")
+                if(profileList.isNotEmpty()) {
+                    Box(
+                        modifier = Modifier
+                            .weight(3.5f)
+                            .fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = profileList[0].userBio ?: "Null",
+                            textAlign = TextAlign.Center,
+                            style = TextStyle(
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 16.sp
+                            )
+                        )
+                    }
+                    Text(
+                        text = "${profileList[0].userCourse ?: "Null"} " +
+                                "Year ${profileList[0].userYearLevel ?: "Null"}",
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .weight(1f),
+                        style = TextStyle(
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    )
+                } else {
+                    Text(text = "BIO")
+                    Text(text = "  -")
+                    Text(text = "  -")
+                    Text(text = "  -")
+                    Text(text = "YEAR")
+                    Text(text = "  -")
+                    Text(text = "  -")
+                }
             }
         }
         Surface(
             modifier = Modifier
-                .heightIn(max = 200.dp, min = 200.dp)
+                .heightIn(max = 150.dp, min = 250.dp)
         ) {
             Column(
                 verticalArrangement = Arrangement.Top,
@@ -150,7 +205,7 @@ fun TutorDetailScreen(
                     repeat(3){
                         item {
                             Image(
-                                painter = painterResource(R.drawable._83945387_1317182618979724_2368759731661496754_n_removebg_preview),
+                                painter = painterResource(R.drawable.sb_logo_with_title),
                                 contentDescription = "Tutors Course Pic",
                                 Modifier.fillMaxHeight()
                             )
@@ -163,6 +218,7 @@ fun TutorDetailScreen(
     }
     if (UploadConfirmationRequired) {
         if(currentUser != (userSubject.userId ?: "null")) {
+//        if(true){
             EnrollConfirmationDialog(
                 onConfirm = {
                     UploadConfirmationRequired = false

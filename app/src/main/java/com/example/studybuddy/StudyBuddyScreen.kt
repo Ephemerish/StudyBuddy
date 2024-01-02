@@ -1,12 +1,12 @@
 package com.example.studybuddy
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -32,11 +32,15 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -79,6 +83,46 @@ fun StudyBuddyScreen(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope: CoroutineScope = rememberCoroutineScope()
     val navController: NavHostController = rememberNavController()
+
+    val context = LocalContext.current
+    LaunchedEffect(key1 = Unit){
+        viewModel.fetchNotificationRequestDataFromDatabase(userData?.userId ?: "null")
+    }
+
+    var notificationRequestRequestList by viewModel.notificationRequestRequestList
+    var notificationRequestAcceptList by viewModel.notificationRequestAcceptList
+
+    if(notificationRequestRequestList.isNotEmpty()) {
+        notificationRequestRequestList.forEach(){
+            makeNotification(
+                context = context,
+                message = "${it.senderUserName} requested to be tutored in ${it.selectedSubjectName}",
+                notificationTitle = "You received a request"
+            )
+            viewModel.deleteNotificationRequestFromDatabase(
+                currentUser = it.receiverUserId ?: "NULL",
+                subjectName = it.selectedSubjectName ?: "NULL",
+                context = context,
+            )
+        }
+        notificationRequestRequestList = emptyList()
+    }
+    if(notificationRequestAcceptList.isNotEmpty()) {
+        notificationRequestAcceptList.forEach(){
+            makeNotification(
+                context = context,
+                message = "${it.senderUserName} accepted your request to be tutored in ${it
+                    .selectedSubjectName}. Let the learning begin!",
+                notificationTitle = "Your request has been accepted"
+            )
+            viewModel.deleteNotificationRequestFromDatabase(
+                currentUser = it.receiverUserId ?: "NULL",
+                subjectName = it.selectedSubjectName ?: "NULL",
+                context = context,
+            )
+        }
+        notificationRequestAcceptList = emptyList()
+    }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -141,7 +185,8 @@ fun StudyBuddyScreen(
                         navDrawerUiState = navDrawerUiState,
                         scope = scope,
                         innerPaddingValues = PaddingValues(),
-                        googleAuthUiClient =  googleAuthUiClient
+                        googleAuthUiClient =  googleAuthUiClient,
+                        userData = userData
                     )
                 }
             }
@@ -180,7 +225,8 @@ fun StudyBuddyTopBar(
                 Icon(
                     imageVector = Icons.Default.Menu,
                     contentDescription = "Navagation",
-                    modifier = Modifier.size(30.dp)
+                    modifier = Modifier.size(30.dp),
+                    tint = MaterialTheme.colorScheme.background
                 )
             }
         },
@@ -195,6 +241,11 @@ fun StudyBuddyTopBar(
                         contentDescription = "Profile Img",
                         modifier = Modifier
                             .size(50.dp)
+                            .border(
+                                BorderStroke(1.dp, MaterialTheme.colorScheme.background),
+                                CircleShape
+                            )
+                            .padding(1.dp)
                             .clip(CircleShape),
                         contentScale = ContentScale.Crop,
                     )
@@ -285,8 +336,6 @@ fun StudyBuddyNavigationBar(
                         // Avoid multiple copies of the same destination when
                         // reselecting the same item
                         launchSingleTop = true
-                        // Restore state when reselecting a previously selected item
-                        restoreState = true
                     }
                 },
                 icon = {

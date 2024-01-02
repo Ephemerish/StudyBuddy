@@ -27,12 +27,16 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.studybuddy.presentation.sign_in.AccountInfoDestination
+import com.example.studybuddy.presentation.sign_in.AccountInfoScreen
 import com.example.studybuddy.presentation.sign_in.GoogleAuthUiClient
 import com.example.studybuddy.presentation.sign_in.ProfileDestination
 import com.example.studybuddy.presentation.sign_in.ProfileScreen
 import com.example.studybuddy.presentation.sign_in.SignInDestination
 import com.example.studybuddy.presentation.sign_in.SignInScreen
 import com.example.studybuddy.presentation.sign_in.SignInViewModel
+import com.example.studybuddy.presentation.sign_in.VerificationCenterDestination
+import com.example.studybuddy.presentation.sign_in.VerificationCenterScreen
 import com.example.studybuddy.ui.AppViewModelProvider
 import com.example.studybuddy.ui.theme.StudyBuddyTheme
 import com.google.firebase.database.DatabaseReference
@@ -106,7 +110,7 @@ fun StudyBuddyApp(
                 if(state.isSignInSuccesful){
                     Toast.makeText( applicationContext,"Sign In Successful", Toast.LENGTH_LONG)
                         .show()
-                    viewModel.saveUser(googleAuthUiClient.getSignedUser())
+                    viewModel.saveUserToLocalDatabase(googleAuthUiClient.getSignedUser())
                     loginNavController.navigate(StudyBuddyDestination.route)
                     viewModel.resetState()
                 }
@@ -129,7 +133,6 @@ fun StudyBuddyApp(
                 }
             )
         }
-
         composable(StudyBuddyDestination.route){
             StudyBuddyScreen(
                 userData = googleAuthUiClient.getSignedUser(),
@@ -153,6 +156,7 @@ fun StudyBuddyApp(
         composable(ProfileDestination.route) {
             ProfileScreen(
                 userData = googleAuthUiClient.getSignedUser(),
+                loginNavController = loginNavController,
                 onSignOut = {
                     coroutineScope.launch {
                         googleAuthUiClient.signout()
@@ -163,20 +167,19 @@ fun StudyBuddyApp(
                         ).show()
                         viewModel.logoutUser()
                         loginNavController.navigate(SignInDestination.route)
-//                        {
-//                            loginNavController.graph.startDestinationRoute?.let { route ->
-//                                popUpTo(route) {
-//                                    saveState = true
-//                                }
-//                            }
-//                            // Avoid multiple copies of the same destination when
-//                            // reselecting the same item
-//                            launchSingleTop = true
-//                            // Restore state when reselecting a previously selected item
-//                            restoreState = true
-//                        }
                     }
                 }
+            )
+        }
+        composable(AccountInfoDestination.route){
+            AccountInfoScreen(
+                loggedUser = loggedUser
+            )
+        }
+        composable(VerificationCenterDestination.route){
+            VerificationCenterScreen(
+                loggedUser = loggedUser,
+                loginNavController = loginNavController,
             )
         }
     }

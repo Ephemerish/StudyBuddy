@@ -1,16 +1,18 @@
 package com.example.studybuddy.data
 
+import MyClassDestination
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.example.studybuddy.ui.navigation.NavigationDestination
+import com.example.studybuddy.ui.screen.AboutUsDestination
 import com.example.studybuddy.ui.screen.ContactUsDestination
 import com.example.studybuddy.ui.screen.HomeDestination
 import com.example.studybuddy.ui.screen.RequestDestination
-import com.example.studybuddy.ui.screen.MyClassDestination
 
 data class NavigationItemContent(
     val navDrawerType: NavDrawerType,
@@ -20,7 +22,7 @@ data class NavigationItemContent(
 )
 
 enum class NavDrawerType {
-    Home, Request, MyClass, ContactUs
+    Home, Request, MyClass, ContactUs, AboutUs
 }
 
 val navigationItemContentList = listOf(
@@ -62,5 +64,11 @@ val sideNavigationItemContentList = listOf(
         icon = Icons.Filled.Call,
         text = "ContactUs",
         destination = ContactUsDestination
+    ),
+    NavigationItemContent(
+        navDrawerType = NavDrawerType.AboutUs,
+        icon = Icons.Filled.Star,
+        text = "About Us",
+        destination = AboutUsDestination
     )
 )

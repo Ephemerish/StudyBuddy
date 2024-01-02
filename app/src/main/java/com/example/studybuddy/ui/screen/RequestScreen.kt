@@ -38,6 +38,7 @@ import com.example.studybuddy.R
 import com.example.studybuddy.ui.AppViewModelProvider
 import com.example.studybuddy.ui.navigation.NavigationDestination
 import com.example.studybuddy.ui.theme.Shapes
+import com.example.studybuddy.ui.theme.StudyBuddyViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -49,6 +50,7 @@ object RequestDestination : NavigationDestination {
 @Composable
 fun RequestScreen(
     viewModel: RequestViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    appViewModel: StudyBuddyViewModel,
 ) {
     val context = LocalContext.current
     LaunchedEffect(key1 = Unit){
@@ -68,7 +70,8 @@ fun RequestScreen(
                     userRequest= it,
                     viewModel = viewModel,
                     coroutineScope = coroutineScope,
-                    context = context
+                    context = context,
+                    userSubject = userSubject
                 )
             }
         }
@@ -79,7 +82,7 @@ fun RequestScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
-                painter = painterResource(R.drawable._83945387_1317182618979724_2368759731661496754_n_removebg_preview),
+                painter = painterResource(R.drawable.sb_logo_with_title),
                 contentDescription = ""
             )
             Text(
@@ -99,7 +102,8 @@ fun RequestCard(
     userRequest: UserRequestData,
     viewModel: RequestViewModel,
     coroutineScope: CoroutineScope,
-    context: Context
+    context: Context,
+    userSubject: List<UserRequestData>,
 ) {
     Card(
 //        onClick = {
@@ -171,6 +175,9 @@ fun RequestCard(
                         if (userRequest.requestState == RequestStateType.PENDING) {
                             Button(onClick = {
                                 coroutineScope.launch() {
+                                        viewModel.upsertNotificationRequest(
+                                            userRequest = userRequest
+                                        )
                                     viewModel.updateRequest(
                                         updatedData = userRequest,
                                         newRequestState = RequestStateType.ACCEPTED,
@@ -201,7 +208,7 @@ fun RequestCard(
                                 modifier = Modifier
                             )
                             Text(
-                                text = "Due to privacy reason we will not share the email yet",
+                                text = userRequest.senderUserEmail ?: "NULL",
                                 modifier = Modifier,
                                 color = Color.Red
                             )
@@ -214,8 +221,8 @@ fun RequestCard(
     }
 }
 
-@Preview
-@Composable
-fun MessageScreenPrev() {
-    RequestScreen()
-}
+//@Preview
+//@Composable
+//fun MessageScreenPrev() {
+//    RequestScreen(appViewModel = viewModel)
+//}

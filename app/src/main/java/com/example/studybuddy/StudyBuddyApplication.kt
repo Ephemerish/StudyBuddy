@@ -22,7 +22,6 @@ import com.example.studybuddy.data.AppDataContainer
 import com.google.firebase.FirebaseApp
 
 class StudyBuddyApplication : Application() {
-
     /**
      * AppContainer instance used by the rest of classes to obtain dependencies
      */
