@@ -2,7 +2,7 @@
 <resources>
     <style name="Theme.MyApp.MySplash" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">#FFB02E00</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/_83945</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/sb_logo_no_title</item>
         <item name="postSplashScreenTheme">@style/Theme.StudyBuddy</item>
     </style>
 </resources>

@@ -31,7 +31,9 @@ class RequestViewModel(
                 for (requestData in dataSnapshot.children) {
                     val request = requestData.getValue(UserRequestData::class.java)
                     request?.let {
-                        userRequests.add(it)
+                        if(it.requestState != RequestStateType.REJECTED) {
+                            userRequests.add(it)
+                        }
                     }
                 }
                 userRequestList.value = userRequests
@@ -89,8 +91,25 @@ class RequestViewModel(
     private suspend fun getCurrentUser(): User? {
         return studyBuddyRepository.getUser().firstOrNull()
     }
-}
 
+    val database = Firebase.database("https://study-buddy-79089-default-rtdb.asia-southeast1.firebasedatabase.app/")
+    val myRef = database.getReference("StudyBuddy")
+    suspend fun upsertNotificationRequest(
+        userRequest: UserRequestData
+    ) {
+        val senderUser = getCurrentUser()
+
+        val notificationRequestReference = myRef.child("notificationRequest/${userRequest.receiverUserId} - ${userRequest.selectedSubjectName}")
+        val notificationRequestData = mapOf(
+            "senderUserId" to senderUser?.userId,
+            "receiverUserId" to userRequest.senderUserId,
+            "senderUserName" to senderUser?.fullName,
+            "selectedSubjectName" to userRequest.selectedSubjectName,
+            "notificationType" to NotificationStateType.ACCEPT,
+        )
+        notificationRequestReference.setValue(notificationRequestData)
+    }
+}
 
 data class UserRequestData(
     val senderUserId: String? = null,

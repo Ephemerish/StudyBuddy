@@ -41,7 +41,6 @@ import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -170,7 +169,7 @@ fun RegistrationScreen(
                     Spacer(modifier = Modifier.width(10.dp))
                     AsyncImage(
                         model = googleAuthUiClient.getSignedUser()?.profilePictureUrl,
-                        error = painterResource(R.drawable._83945387_1317182618979724_2368759731661496754_n_removebg_preview),
+                        error = painterResource(R.drawable.sb_logo_with_title),
                         contentDescription = "Profile Pic",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier

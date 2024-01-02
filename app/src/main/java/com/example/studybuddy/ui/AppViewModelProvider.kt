@@ -22,7 +22,9 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.studybuddy.StudyBuddyApplication
+import com.example.studybuddy.presentation.sign_in.AccountInfoViewModel
 import com.example.studybuddy.presentation.sign_in.SignInViewModel
+import com.example.studybuddy.presentation.sign_in.VerificationCenterViewModel
 import com.example.studybuddy.ui.screen.HomeViewModel
 import com.example.studybuddy.ui.screen.RequestViewModel
 import com.example.studybuddy.ui.screen.MyClassViewModel
@@ -54,6 +56,12 @@ object AppViewModelProvider {
         }
         initializer {
             RequestViewModel(inventoryApplication().container.studyBuddyRepository)
+        }
+        initializer {
+            AccountInfoViewModel(inventoryApplication().container.studyBuddyRepository)
+        }
+        initializer {
+            VerificationCenterViewModel(inventoryApplication().container.studyBuddyRepository)
         }
     }
 }

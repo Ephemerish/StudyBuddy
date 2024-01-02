@@ -16,6 +16,7 @@
 
 package com.example.studybuddy.ui.navigation
 
+import MyClassScreen
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -26,6 +27,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.studybuddy.data.NavDrawerType
 import com.example.studybuddy.presentation.sign_in.GoogleAuthUiClient
+import com.example.studybuddy.presentation.sign_in.UserData
 import com.example.studybuddy.ui.StudyBuddyUiState
 import com.example.studybuddy.ui.screen.AboutUsDestination
 import com.example.studybuddy.ui.screen.AboutUsScreen
@@ -35,8 +37,6 @@ import com.example.studybuddy.ui.screen.HomeDestination
 import com.example.studybuddy.ui.screen.HomeScreen
 import com.example.studybuddy.ui.screen.RequestDestination
 import com.example.studybuddy.ui.screen.RequestScreen
-import com.example.studybuddy.ui.screen.MyClassDestination
-import com.example.studybuddy.ui.screen.MyClassScreen
 import com.example.studybuddy.ui.screen.RegistrationDestination
 import com.example.studybuddy.ui.screen.RegistrationScreen
 import com.example.studybuddy.ui.screen.TutorDetailDestination
@@ -61,7 +61,8 @@ fun StudyBuddyBodyNavHost(
     scope: CoroutineScope,
     innerPaddingValues: PaddingValues,
     googleAuthUiClient: GoogleAuthUiClient,
-    firebase: DatabaseReference
+    firebase: DatabaseReference,
+    userData: UserData?
 ) {
 
     NavHost(
@@ -70,13 +71,19 @@ fun StudyBuddyBodyNavHost(
         modifier = modifier
     ) {
         composable(route = HomeDestination.route) {
-            HomeScreen(innerPaddingValues = innerPaddingValues, navController = navController)
+            HomeScreen(
+                innerPaddingValues = innerPaddingValues,
+                navController = navController,
+                userData = userData
+            )
             viewModel.updateCurrentNavDrawer(
                 navDrawerType = NavDrawerType.Home,
             )
         }
         composable(route = RequestDestination.route) {
-            RequestScreen()
+            RequestScreen(
+                appViewModel = viewModel
+            )
             viewModel.updateCurrentNavDrawer(
                 navDrawerType = NavDrawerType.Request,
             )
@@ -128,12 +135,18 @@ fun StudyBuddyBodyNavHost(
             )
         }
         composable(
-            route = TutorDetailDestination.route,
+            route = TutorDetailDestination.route+"/{myParam}",
+            arguments = listOf(
+                navArgument("myParam"){
+                    type = NavType.StringType
+                }
+            )
         ) {
-            //val selectedUserSubject = it.arguments?.getString("myParam")?: ""
+            val selectedSubject = it.arguments?.getString("myParam")?: ""
             TutorDetailScreen(
                 navController = navController,
-                appViewModel = viewModel
+                selectedSubject = selectedSubject,
+                appViewModel = viewModel,
             )
             viewModel.updateCurrentNavDrawer(
                 navDrawerType = NavDrawerType.Home,

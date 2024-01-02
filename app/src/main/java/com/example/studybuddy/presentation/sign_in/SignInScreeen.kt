@@ -60,7 +60,7 @@ fun SignInScreen(
                 .fillMaxWidth()
         ) {
             Image(
-                painter = painterResource(R.drawable._83945387_1317182618979724_2368759731661496754_n_removebg_preview),
+                painter = painterResource(R.drawable.sb_logo_with_title),
             contentDescription = "LOGO",
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxWidth()

@@ -1,5 +1,6 @@
 package com.example.studybuddy.data
 
+import MyClassDestination
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.DateRange
@@ -12,7 +13,6 @@ import com.example.studybuddy.ui.screen.AboutUsDestination
 import com.example.studybuddy.ui.screen.ContactUsDestination
 import com.example.studybuddy.ui.screen.HomeDestination
 import com.example.studybuddy.ui.screen.RequestDestination
-import com.example.studybuddy.ui.screen.MyClassDestination
 
 data class NavigationItemContent(
     val navDrawerType: NavDrawerType,

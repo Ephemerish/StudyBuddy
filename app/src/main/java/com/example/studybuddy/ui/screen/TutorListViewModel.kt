@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.example.studybuddy.data.StudyBuddyRepository
+import com.example.studybuddy.presentation.sign_in.UserProfileFirebase
 import com.google.firebase.Firebase
 import com.google.firebase.crashlytics.internal.Logger
 import com.google.firebase.database.DataSnapshot
@@ -15,9 +16,47 @@ class TutorListViewModel(
     private val studyBuddyRepository: StudyBuddyRepository
 ): ViewModel(){
     val UserSubjectList = mutableStateOf<List<UserSubjectFirebase>>(emptyList())
+    val userProfileList = mutableStateOf<List<UserProfileFirebase>>(emptyList())
+
+    val database = Firebase.database("https://study-buddy-79089-default-rtdb.asia-southeast1.firebasedatabase.app/")
+
+    suspend fun beTutorToSubject(selectedSubject: String, profileList: List<UserProfileFirebase>) {
+        val myRef = database.getReference("StudyBuddy")
+        val userSubjectReference = myRef.child("userSubjects/${selectedSubject}/${profileList[0].userId}")
+        val userSubjectData = mapOf(
+            "userId" to profileList[0].userId,
+            "userName" to profileList[0].userName,
+            "userProfilePic" to profileList[0].userProfilePic,
+            "userEmail" to profileList[0].userEmail,
+            "subjectName" to selectedSubject
+        )
+        userSubjectReference.setValue(userSubjectData)
+    }
+
+    fun fetchProfileDataFromDatabase() {
+        val database = Firebase.database("https://study-buddy-79089-default-rtdb.asia-southeast1.firebasedatabase.app/")
+        val myRef = database.getReference("StudyBuddy/profile")
+
+        myRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val userProfile = mutableListOf<UserProfileFirebase>()
+                for (userProfileData in dataSnapshot.children) {
+                    val profile = userProfileData.getValue(UserProfileFirebase::class.java)
+                    profile?.let {
+                        userProfile.add(it)
+                    }
+                }
+                userProfileList.value = userProfile
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.w(Logger.TAG, "Failed to read userSubject value.", error.toException())
+            }
+        })
+    }
 
     // Add a function to fetch data
-    fun fetchDataFromDatabase(selectedSubject: String) {
+    fun fetchSubjectDataFromDatabase(selectedSubject: String) {
         val database = Firebase.database("https://study-buddy-79089-default-rtdb.asia-southeast1.firebasedatabase.app/")
         val myRef = database.getReference("StudyBuddy/userSubjects/${selectedSubject}")
 

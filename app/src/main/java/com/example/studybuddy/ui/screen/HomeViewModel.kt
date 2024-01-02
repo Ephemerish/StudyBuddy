@@ -16,13 +16,17 @@
 
 package com.example.studybuddy.ui.screen
 
+import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.studybuddy.data.StudyBuddyRepository
 import com.example.studybuddy.data.database.SubjectDao
+import com.example.studybuddy.presentation.sign_in.UserProfileFirebase
 import com.google.firebase.Firebase
+import com.google.firebase.crashlytics.internal.Logger
 import com.google.firebase.crashlytics.internal.Logger.TAG
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -95,20 +99,37 @@ class HomeViewModel(private val studyBuddyRepository: StudyBuddyRepository): Vie
         private const val TIMEOUT_MILLIS = 5_000L
     }
 
-//    var _itemUiState by mutableStateOf(CourseItemUiState())
-//        private set
-//    var _homeUiState by mutableStateOf(HomeUiState())
-//        private set
-//
-//    fun updateUiState(homeUiState: HomeUiState) {
-//        _homeUiState =
-//            HomeUiState(searchCourseText = homeUiState.searchCourseText, isEntryValid = validateInput(homeUiState))
-//    }
-//    private fun validateInput(uiState: HomeUiState): Boolean {
-//        return with(uiState) {
-//            searchCourseText.isNotBlank()
-//        }
-//    }
+    val userProfileList = mutableStateOf<List<UserProfileFirebase>>(emptyList())
+    fun fetchProfileDataFromDatabase(userID: String) {
+        val database = Firebase.database("https://study-buddy-79089-default-rtdb.asia-southeast1.firebasedatabase.app/")
+        val myRef = database.getReference("StudyBuddy/profile")
+
+        myRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val userProfile = mutableListOf<UserProfileFirebase>()
+                for (userProfileData in dataSnapshot.children) {
+                    val profile = userProfileData.getValue(UserProfileFirebase::class.java)
+                    profile?.let {
+                        if(it.userId == userID){
+                            userProfile.add(it)
+                        }
+                    }
+                }
+                userProfileList.value = userProfile
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.w(Logger.TAG, "Failed to read userSubject value.", error.toException())
+            }
+        })
+    }
+
+    fun toastMessage(context: Context, message: String){
+        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+    }
+
+
+
 }
 
 /**
@@ -122,4 +143,11 @@ data class SubjectFirebase(
 
 data class HomeSearchBarState(
     val subjectFilter: String = ""
+)
+data class NotificationRequestFirebase(
+    val senderUserId: String? = null,
+    val receiverUserId: String? = null,
+    val senderUserName: String? = null,
+    val selectedSubjectName: String? = null,
+    val notificationType: String? = null
 )

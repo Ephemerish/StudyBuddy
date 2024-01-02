@@ -30,12 +30,10 @@
     import androidx.compose.foundation.layout.padding
     import androidx.compose.foundation.layout.size
     import androidx.compose.foundation.layout.sizeIn
-    import androidx.compose.foundation.layout.wrapContentSize
     import androidx.compose.foundation.lazy.grid.GridCells
     import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
     import androidx.compose.foundation.lazy.grid.items
     import androidx.compose.foundation.text.KeyboardOptions
-    import androidx.compose.material3.Button
     import androidx.compose.material3.Card
     import androidx.compose.material3.ExperimentalMaterial3Api
     import androidx.compose.material3.MaterialTheme
@@ -60,15 +58,17 @@
     import androidx.compose.ui.text.input.KeyboardType
     import androidx.compose.ui.text.style.TextAlign
     import androidx.compose.ui.text.style.TextOverflow
-    import androidx.compose.ui.tooling.preview.Preview
     import androidx.compose.ui.unit.dp
     import androidx.compose.ui.unit.sp
     import androidx.lifecycle.viewmodel.compose.viewModel
     import androidx.navigation.NavHostController
-    import androidx.navigation.compose.rememberNavController
     import coil.compose.AsyncImage
     import coil.request.ImageRequest
     import com.example.studybuddy.R
+    import com.example.studybuddy.makeNotification
+    import com.example.studybuddy.presentation.sign_in.UserData
+    import com.example.studybuddy.presentation.sign_in.UserProfileFirebase
+    import com.example.studybuddy.presentation.sign_in.VerificationStateType
     import com.example.studybuddy.ui.AppViewModelProvider
     import com.example.studybuddy.ui.navigation.NavigationDestination
 
@@ -84,17 +84,20 @@
     fun HomeScreen(
         innerPaddingValues: PaddingValues,
         navController: NavHostController,
-        viewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.Factory)
+        viewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.Factory),
+        userData: UserData?
     ) {
+        val context = LocalContext.current
+        LaunchedEffect(key1 = Unit){
+            viewModel.fetchProfileDataFromDatabase(userData?.userId ?: "null")
+        }
+
+        val userProfile by viewModel.userProfileList
         var homeSearchBarState by viewModel.homeSearchBarState
         // Fetch data when HomeScreen is created
-
         val subjectList by viewModel.subjectList
-
         viewModel.fetchDataFromDatabase()
 
-
-        val context = LocalContext.current
         val homeUiState by viewModel.homeUiState.collectAsState()
         val coroutineScope = rememberCoroutineScope()
         Column(
@@ -114,7 +117,7 @@
                     verticalArrangement = Arrangement.Top,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Image(painter = painterResource(R.drawable._83945387_1317182618979724_2368759731661496754_n_removebg_preview),
+                    Image(painter = painterResource(R.drawable.sb_logo_with_title),
                         contentDescription = "LOGO",
                         contentScale = ContentScale.FillWidth,
                         alignment = Alignment.Center,
@@ -122,7 +125,7 @@
                     )
                     Text(
                         text = "I need the tutor for",
-//                        text = subjectList.getOrNull(0)?.subjectName ?: "No Subject Available",
+//                      text = subjectList.getOrNull(0)?.subjectName ?: "No Subject Available",
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center
                     )
@@ -158,17 +161,21 @@
                             columns = GridCells.Fixed(3),
                             verticalArrangement = Arrangement.spacedBy(5.dp),
                             horizontalArrangement = Arrangement.spacedBy(5.dp),
-                            modifier = Modifier.padding(1.dp)
+                            modifier = Modifier
+                                .padding(horizontal = 10.dp)
+                                .padding(bottom = 20.dp)
                         ) {
                             val filteredSubjects = subjectList.filter { subject ->
                                 subject.subjectName?.contains(homeSearchBarState.subjectFilter,
                                     ignoreCase = true) ?: false
                             }
 
-                            val limitedSubjects = filteredSubjects.take(9)
+                            val limitedSubjects = filteredSubjects.take(30)
 
                             items(limitedSubjects) { subject ->
                                 CourseCard(
+                                    viewModel = viewModel,
+                                    userProfile = userProfile,
                                     context = context,
                                     featureCourse = subject,
                                     onClickAction = {
@@ -213,45 +220,6 @@
                     }
                 }
             }
-            Surface(
-                color = MaterialTheme.colorScheme.tertiary,
-                modifier = Modifier
-                    .weight(1.5f)
-                    .fillMaxWidth()
-            ) {
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = "Become A Tutor",
-                        modifier = Modifier
-                            .padding(10.dp)
-                            .wrapContentSize(Alignment.Center),
-                        textAlign = TextAlign.Center,
-                        style = TextStyle(
-                            fontWeight = FontWeight.Bold
-                        )
-                    )
-                    Button(onClick = {
-                        navController.navigate(RegistrationDestination.route) {
-                            navController.graph.startDestinationRoute?.let { route ->
-                                popUpTo(route) {
-                                    saveState = true
-                                }
-                            }
-                            // Avoid multiple copies of the same destination when
-                            // reselecting the same item
-                            launchSingleTop = true
-                            // Restore state when reselecting a previously selected item
-                            restoreState = true
-                        }
-                    }) {
-                        Text(text = "Apply Now")
-                    }
-                }
-            }
         }
     }
 
@@ -260,10 +228,22 @@
     fun CourseCard(
         featureCourse: SubjectFirebase,
         onClickAction: () -> Unit,
-        context: Context
+        context: Context,
+        userProfile: List<UserProfileFirebase>,
+        viewModel: HomeViewModel
     ) {
         Card(
-            onClick = onClickAction,
+            onClick = if(userProfile.isNotEmpty()){
+                if(userProfile[0].userVerificationState == VerificationStateType.VERIFIED
+                        .toString()){
+                    onClickAction} else {
+                    {
+                        viewModel.toastMessage(context, "You need to be verified first")
+                    }
+                }
+            } else {
+                {}
+            },
             modifier = Modifier
                 .size(width = 105.dp, height = 85.dp),
             enabled = true
@@ -285,7 +265,7 @@
                         .data(featureCourse.imgLink)
                         .crossfade(true)
                         .build(),
-                    error = painterResource(R.drawable._83945387_1317182618979724_2368759731661496754_n_removebg_preview),
+                    error = painterResource(R.drawable.sb_logo_with_title),
                     contentDescription = "Course Photo",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -332,9 +312,13 @@
 //    fun CourseCardPrev() {
 //        CourseCard(FeatureCourseContentList[0], {})
 //    }
-
-    @Preview
-    @Composable
-    fun HomeScreenPrev() {
-        HomeScreen(innerPaddingValues = PaddingValues(vertical = 80.dp),  rememberNavController())
-    }
+//
+//    @Preview
+//    @Composable
+//    fun HomeScreenPrev() {
+//        HomeScreen(
+//            innerPaddingValues = PaddingValues(vertical = 80.dp),
+//            rememberNavController(),
+//            userData = userData
+//        )
+//    }
